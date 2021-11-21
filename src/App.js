@@ -12,7 +12,9 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      resultObj: "Default Content"
+      resultObj: "Default Content",
+      apiKey: "",
+      apiSecretKey  : ""
     }
   }
   handleFiles = files => {
@@ -132,6 +134,25 @@ class App extends Component {
     })
   }
 
+
+  // UI EVENTS
+
+  handleApiKey = (evt) => {
+    this.setState({
+      apiKey: evt.target.value
+    });
+  }
+
+  handleApiSecretKey = (evt) => {
+    this.setState({
+      apiSecretKey: evt.target.value
+    });
+  }
+
+  onFetchDataButtonClick = (evt) => {
+    console.log(this.state.apiKey,this.state.apiSecretKey);
+  }
+
   render(){
     return (
       <div className="App">
@@ -143,11 +164,16 @@ class App extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <div> Result </div>
+          <div> Result </div>
           <div> { this.state.resultObj }</div>
             Follow on linkedin
           </a>
-          
+          <label>Api Key:</label>
+          <input type="text" value={this.state.apiKey} onChange={this.handleApiKey}></input>
+          <label>Api Secret Key:</label>
+          <input type="text" value={this.state.apiSecretKey} onChange={this.handleApiSecretKey}></input>
+          <button className='btn' onClick={this.onFetchDataButtonClick}>FEtCH</button>
+
           <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
               <button className='btn'>Upload</button>
           </ReactFileReader>
