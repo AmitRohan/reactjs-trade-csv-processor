@@ -68,3 +68,12 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+# Docs
+
+# Robots.txt
+
+Robots.txt is a text file which is created to instruct web robots (typically search engine robots like Googlebot, Bingbot, Msnbot, discobot, and Slurp) to allow or block web pages for crawling the website.
+
+In practice, robots.txt files consist of one or more rules to allow or block the web-crawling software or search engine robots. Crawl instructions are specified by “disallowing” or “allowing” the behavior of specific (or all) user agents like Googlebot, Bingbot, Msnbot, discobot, and Slurp.
