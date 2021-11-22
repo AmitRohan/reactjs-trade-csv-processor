@@ -20,31 +20,44 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      resultObj: "Default Content",
+      fileUploaded: false,
       allCoinData : [],
+      allCoinCoinGeckoId : [],
       allCoinPrice : [],
       allSuportedCoins : [],
       selectedCoinData : defaultCoinObject,
       selectedCoinDataSet : [],
       selectedCoinPrice : -1,
-      selectedCoinToken : "ETH"
+      selectedCoinToken : ""
     }
   }
   handleFiles = files => {
-    this.setState({ resultObj: ""});
     var reader = new FileReader();
     reader.onload = (e) => {
         // Use reader.result
         CSVPasrse(reader.result, {columns: true, trim: true}, (err,allCoinData) => {
-          this.fetchLatestDataFromCoinGecko(allCoinData);
+
+          this.setState({ fileUploaded: true});
+
+          var allSuportedCoins = this.getAllCoinsFromReport(allCoinData);
+          this.setState( { allSuportedCoins , allCoinData })
+          this.updateLatestCoinPricesFromCoinGecko();
+
+          var selectedCoinToken = "ETH"
+          this.setState( { selectedCoinToken })
+          this.fetchLatestDataFromCoinGecko();
           
         }) 
     }
     reader.readAsText(files[0]);
   }
 
-  getCoinDataFromReport = (report) => {
-    return report.filter( row => (row.Coin.toLowerCase() === this.state.selectedCoinToken.toLowerCase()));
+  getCoinDataFromReport = (selectedCoinToken) => {
+    return this.state.allCoinData.filter( row => (row.Coin.toLowerCase() === selectedCoinToken.toLowerCase()));
+  }
+
+  getAllCoinsFromReport = (report) => {
+    return [...new Set(report.map((row) => row.Coin))] 
   }
 
   analyzeCoinData = (prevTransaction,currentTransaction) => {
@@ -69,17 +82,25 @@ class App extends Component {
     return newRecord  
   }
   
-  supportedCoins = [
-      "ETH",
-      "BTC",
-      "QKC",
-      "DOGE",
-      "SHIB",
-      "SAFEMOON",
-      "XRP"
-  ];
 
-  fetchLatestDataFromCoinGecko = (allCoinData = []) => {
+  
+  // var coinSymbol = coinResp.symbol.toLowerCase();
+
+  // Updates coin price at indes in state
+  fetchCoinDataUsingId = (index) => {
+    CoinGeckoClient
+      .coins
+      .fetch(this.state.allCoinCoinGeckoId[index], {})
+      .then(coinDataReponse => {
+          const coinPrice = coinDataReponse.data.market_data.current_price.inr
+          var allCoinPrice = this.state.allCoinPrice;
+          allCoinPrice[index] = coinPrice
+          this.setState({ allCoinPrice })     
+          console.log(this.state);
+      });
+  }
+
+  updateLatestCoinPricesFromCoinGecko = () => {
     CoinGeckoClient
         .coins
         .list()
@@ -88,28 +109,45 @@ class App extends Component {
                 return;
             }
             resp.data.map( coinResp => {
-                if(coinResp.symbol === this.state.selectedCoinToken.toLowerCase()){
+                var coinSymbol = coinResp.symbol.toLowerCase();
+                var indexInSuportedCoins = this.state.allSuportedCoins.indexOf(coinSymbol)
+                if(indexInSuportedCoins != -1){
+                  
+                  var allCoinCoinGeckoId = this.state.allCoinCoinGeckoId;
+                  allCoinCoinGeckoId[indexInSuportedCoins] = coinResp.idk
+                  this.setState({ allCoinCoinGeckoId });
+
+                  this.fetchCoinDataUsingId(indexInSuportedCoins)
+                }
+          
+        })
+    })
+  }
+
+  fetchLatestDataFromCoinGecko = () => {
+    CoinGeckoClient
+        .coins
+        .list()
+        .then(resp => {
+            if(resp.code !== 200){
+                return;
+            }
+            resp.data.map( coinResp => {
+                var coinSymbol = coinResp.symbol.toLowerCase();
+                if(coinSymbol === this.state.selectedCoinToken.toLowerCase()){
                     
                     // Get Data
                     console.log("Fetching Latest Coin Data");
                     CoinGeckoClient.coins.fetch(coinResp.id, {})
                         .then(coinDataReponse => {
                             console.log("Latest Coin Data Fetched");
+                            var selectedCoinName = this.state.selectedCoinToken;
                             const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
-                            var selectedCoinDataSet = this.getCoinDataFromReport(allCoinData);
+                            var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
                             var selectedCoinData = selectedCoinDataSet.reduce(this.analyzeCoinData,defaultCoinObject);
-                            console.log(typeof selectedCoinPrice);
-                            console.log(this.state.selectedCoinPrice);
-
                             this.setState({ selectedCoinPrice })
-                            console.log(this.state.selectedCoinPrice);
-
-                            this.setState({selectedCoinDataSet , selectedCoinData , allCoinData})
-                            console.log(this.state);
-
-
-
-                                
+                            this.setState({selectedCoinDataSet , selectedCoinData })
+                                    
                         });
                     console.log("Fetching Historic Prices");
                     CoinGeckoClient.coins.fetchMarketChart(coinResp.id, {days : 91, vs_currency : 'inr' , interval : 'daily '})
