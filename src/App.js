@@ -6,6 +6,7 @@ import { Button } from '@material-ui/core';
 
 import CurrentCoinBalance from './components/CurrentCoinBalance';
 import PortfolioOverview from './components/PortfolioOverview';
+import PortfolioDetails from './components/PortfolioDetails';
 const CSVPasrse = require('csv-parse');
 
 const CoinGecko = require('coingecko-api');
@@ -43,7 +44,7 @@ class App extends Component {
     // Set Checkpoint Size
     this.postProcessingCheckpointCounter = 0;
     var postProcessingCheckpoints = 999999;
-    this.setState({ postProcessingCheckpoints , postProcessingDone : false});
+    this.setState({ postProcessingCheckpoints , postProcessingDone : true});
 
     var reader = new FileReader();
     reader.onload = (e) => {
@@ -55,15 +56,12 @@ class App extends Component {
           var allSuportedCoins = 
                         this.getAllCoinsFromReport(fileData)
                           .filter( coin =>{
-                              return ( -1 != ["BTC","ETH","DOGE"].indexOf(coin))
+                              // return ( -1 != ["BTC","ETH","DOGE"].indexOf(coin))
+                              return ( -1 != ["BTC","ETH"].indexOf(coin))
                           });
           this.setState( { allSuportedCoins , fileData })
-          this.updateLatestCoinPricesFromCoinGecko();
+          // this.updateLatestCoinPricesFromCoinGecko();
 
-          // var selectedCoinToken = "ETH"
-          // this.setState( { selectedCoinToken })
-          // this.fetchLatestDataFromCoinGecko();
-          
         }) 
     }
     reader.readAsText(files[0]);
@@ -168,30 +166,31 @@ class App extends Component {
   }
 
   fetchLatestDataFromCoinGecko = () => {
-    CoinGeckoClient
-        .coins
-        .list()
-        .then(resp => {
-            if(resp.code !== 200){
-                return;
-            }
-            resp.data.map( coinResp => {
-                var coinSymbol = coinResp.symbol.toLowerCase();
-                if(coinSymbol === this.state.selectedCoinToken.toLowerCase()){
+    // CoinGeckoClient
+    //     .coins
+    //     .list()
+    //     .then(resp => {
+    //         if(resp.code !== 200){
+    //             return;
+    //         }
+    //         resp.data.map( coinResp => {
+    //             var coinSymbol = coinResp.symbol.toLowerCase();
+    //             if(coinSymbol === this.state.selectedCoinToken.toLowerCase()){
                     
-                    // Get Data
-                    console.log("Fetching Latest Coin Data");
-                    CoinGeckoClient.coins.fetch(coinResp.id, {})
-                        .then(coinDataReponse => {
+    //                 // Get Data
+    //                 console.log("Fetching Latest Coin Data");
+    //                 // CoinGeckoClient.coins.fetch(coinResp.id, {})
+                    //     .then(coinDataReponse => {
                             console.log("Latest Coin Data Fetched");
                             var selectedCoinName = this.state.selectedCoinToken;
-                            const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
+                            const selectedCoinPrice = 1
+                            // coinDataReponse.data.market_data.current_price.inr
                             var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
                             var selectedCoinData = selectedCoinDataSet.reduce(this.analyzeCoinData,defaultCoinObject);
                             this.setState({ selectedCoinPrice })
                             this.setState({selectedCoinDataSet , selectedCoinData })
-                                    
-                        });
+                            console.log("selectedCoinName", selectedCoinName, selectedCoinDataSet);
+                        // });
                     // console.log("Fetching Historic Prices");
                     // CoinGeckoClient.coins.fetchMarketChart(coinResp.id, {days : 91, vs_currency : 'inr' , interval : 'daily '})
                     //   .then(coinMarketChartData => {
@@ -203,60 +202,45 @@ class App extends Component {
                     //                                   .map(x => { return Math.round(x[1]*10)/10}); // get abs value of price, 2nd param, 1st is timestamp
                           
                     //   });
-            }
-        })
-    })
+    //         }
+    //     })
+    // })
   }
 
   // UI EVENTS
 
-  handleApiKey = (evt) => {
-    this.setState({
-      apiKey: evt.target.value
-    });
-  }
-
-  handleApiSecretKey = (evt) => {
-    this.setState({
-      apiSecretKey: evt.target.value
-    });
-  }
-
-  onFetchDataButtonClick = (evt) => {
-    console.log(this.state.apiKey,this.state.apiSecretKey);
+  handleNewTokenSelection = (selectedCoinToken) => {
+    this.setState( { selectedCoinToken })
+    this.fetchLatestDataFromCoinGecko();
   }
 
   render(){
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" />
-          <label>Upload Report</label>
-          <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
-              <Button color="primary">Upload</Button>
-          </ReactFileReader>
-
+        
           {
-            this.state.postProcessingDone
-              ? <PortfolioOverview
+            !this.state.postProcessingDone
+              ? <header className="App-header"> 
+                  <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" />
+                  <label>Upload Report</label>
+                  <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
+                      <Button color="primary">Upload</Button>
+                  </ReactFileReader>
+                </header> 
+              : 
+              <div>
+                {/* <PortfolioOverview
                   allCoinData = {this.state.allCoinData}
                   allCoins = {this.state.allSuportedCoins}
-                />
-              : (<div> </div>)
+                /> */}
+                <PortfolioDetails
+                  selectedCoinToken = { this.state.selectedCoinToken }
+                  selectedCoinPrice = { this.state.selectedCoinPrice}
+                  selectedCoinData = { this.state.selectedCoinData}
+                  updateSelectedToken = {this.handleNewTokenSelection}
+                  allSuportedCoins = {this.state.allSuportedCoins} />
+              </div>
           }
-
-          {/* {
-            this.state.selectedCoinData !== defaultCoinObject
-              ? <div> </div>
-              : (<CurrentCoinBalance
-                coinToken = {this.state.selectedCoinToken}
-                coinPrice = {this.state.selectedCoinPrice}
-                coinData = {this.state.selectedCoinData}
-              />)
-          } */}
-        </header>
-
-        
       </div>
     );
   }
