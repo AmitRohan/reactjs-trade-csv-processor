@@ -53,6 +53,7 @@ class PortfolioDetails extends Component {
                   }
                   this.props.updateSelectedToken(coin);
                   this.setState({ active : coin})
+                  console.log(this.props);
                 }}
               >
                 {coin}
@@ -70,8 +71,8 @@ class PortfolioDetails extends Component {
           }
         </ButtonGroup>
         {
-            this.props.selectedCoinData !== defaultCoinObject
-              ? <div> </div>
+            this.props.selectedCoinToken === null
+              ? <div> Select a token </div>
               : (<CurrentCoinBalance
                   coinToken = {this.props.selectedCoinToken}
                   coinPrice = {this.props.selectedCoinPrice}
