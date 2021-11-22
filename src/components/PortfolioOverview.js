@@ -11,8 +11,10 @@ class PortfolioOverview extends Component {
 
   getIndividualCards = () =>  {
     var allCoinData = this.props.allCoinData
-    return allCoinData.map( coin => {
+    return allCoinData.map( (coin, id) => {
       return (<CoinOverview
+                key= { id}
+                coinToken = { this.props.allCoins[id]}
                 coinData = { coin }
             />)
     });

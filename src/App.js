@@ -3,6 +3,7 @@ import './App.css';
 import ReactFileReader from 'react-file-reader';
 import React, { Component } from 'react';
 import CurrentCoinBalance from './components/CurrentCoinBalance';
+import PortfolioOverview from './components/PortfolioOverview';
 const CSVPasrse = require('csv-parse');
 
 const CoinGecko = require('coingecko-api');
@@ -17,10 +18,14 @@ const defaultCoinObject = {
 };
 
 class App extends Component {
+  postProcessingCheckpointCounter = 0;
   constructor(props) {
     super(props);
     this.state = {
       fileUploaded: false,
+      postProcessingDone : false,
+      postProcessingCheckpoints : 0,
+      fileData : [],
       allCoinData : [],
       allCoinCoinGeckoId : [],
       allCoinPrice : [],
@@ -32,20 +37,30 @@ class App extends Component {
     }
   }
   handleFiles = files => {
+
+    // Set Checkpoint Size
+    this.postProcessingCheckpointCounter = 0;
+    var postProcessingCheckpoints = 999999;
+    this.setState({ postProcessingCheckpoints , postProcessingDone : false});
+
     var reader = new FileReader();
     reader.onload = (e) => {
         // Use reader.result
-        CSVPasrse(reader.result, {columns: true, trim: true}, (err,allCoinData) => {
+        CSVPasrse(reader.result, {columns: true, trim: true}, (err,fileData) => {
 
-          this.setState({ fileUploaded: true});
+          this.setState({ fileUploaded: true, postProcessingCheckpoints : 0});
 
-          var allSuportedCoins = this.getAllCoinsFromReport(allCoinData);
-          this.setState( { allSuportedCoins , allCoinData })
+          var allSuportedCoins = 
+                        this.getAllCoinsFromReport(fileData)
+                          .filter( coin =>{
+                              return ( -1 != ["BTC","ETH","DOGE"].indexOf(coin))
+                          });
+          this.setState( { allSuportedCoins , fileData })
           this.updateLatestCoinPricesFromCoinGecko();
 
-          var selectedCoinToken = "ETH"
-          this.setState( { selectedCoinToken })
-          this.fetchLatestDataFromCoinGecko();
+          // var selectedCoinToken = "ETH"
+          // this.setState( { selectedCoinToken })
+          // this.fetchLatestDataFromCoinGecko();
           
         }) 
     }
@@ -53,7 +68,7 @@ class App extends Component {
   }
 
   getCoinDataFromReport = (selectedCoinToken) => {
-    return this.state.allCoinData.filter( row => (row.Coin.toLowerCase() === selectedCoinToken.toLowerCase()));
+    return this.state.fileData.filter( row => (row.Coin.toLowerCase() === selectedCoinToken.toLowerCase()));
   }
 
   getAllCoinsFromReport = (report) => {
@@ -82,12 +97,13 @@ class App extends Component {
     return newRecord  
   }
   
-
+  postProcessingCheckpoints = 0;
   
   // var coinSymbol = coinResp.symbol.toLowerCase();
 
   // Updates coin price at indes in state
-  fetchCoinDataUsingId = (index) => {
+  fetchCoinDataUsingId = (cb) => {
+    var index = this.postProcessingCheckpointCounter
     CoinGeckoClient
       .coins
       .fetch(this.state.allCoinCoinGeckoId[index], {})
@@ -96,7 +112,16 @@ class App extends Component {
           var allCoinPrice = this.state.allCoinPrice;
           allCoinPrice[index] = coinPrice
           this.setState({ allCoinPrice })     
-          console.log(this.state);
+
+          var coinDataSet = this.getCoinDataFromReport(this.state.allSuportedCoins[index]);
+          var coinData = coinDataSet.reduce(this.analyzeCoinData,defaultCoinObject);
+          
+          var allCoinData = this.state.allCoinData;
+          allCoinData[index] = coinData
+          this.setState({ allCoinData })
+
+
+          cb();
       });
   }
 
@@ -108,19 +133,35 @@ class App extends Component {
             if(resp.code !== 200){
                 return;
             }
-            resp.data.map( coinResp => {
+            var suportedResponse = resp.data.filter( coinResp => {
+              return (-1 != this.state.allSuportedCoins.indexOf(coinResp.symbol.toUpperCase()))
+            });
+            // Set Checkpoint Size
+            this.postProcessingCheckpointCounter = 0;
+            var postProcessingCheckpoints = suportedResponse.length;
+            this.setState({ postProcessingCheckpoints });
+            
+            var allCoinCoinGeckoId = this.state.allCoinCoinGeckoId;
+            suportedResponse.map( coinResp => {
                 var coinSymbol = coinResp.symbol.toLowerCase();
-                var indexInSuportedCoins = this.state.allSuportedCoins.indexOf(coinSymbol)
-                if(indexInSuportedCoins != -1){
-                  
-                  var allCoinCoinGeckoId = this.state.allCoinCoinGeckoId;
-                  allCoinCoinGeckoId[indexInSuportedCoins] = coinResp.idk
-                  this.setState({ allCoinCoinGeckoId });
+                var indexInSuportedCoins = this.state.allSuportedCoins.indexOf(coinSymbol.toUpperCase())
+                allCoinCoinGeckoId[indexInSuportedCoins] = coinResp.id
+            })
+            this.setState({ allCoinCoinGeckoId });
+            var toRepeat = () => {
+              if(postProcessingCheckpoints <= this.postProcessingCheckpointCounter
+                  && !this.state.postProcessingDone){
+                this.setState({ postProcessingDone : true})
+                return;
+              }
+              this.fetchCoinDataUsingId(() => { 
+                this.postProcessingCheckpointCounter++;
+                toRepeat();
+              })
+            }
+            toRepeat();
 
-                  this.fetchCoinDataUsingId(indexInSuportedCoins)
-                }
-          
-        })
+
     })
   }
 
@@ -149,17 +190,17 @@ class App extends Component {
                             this.setState({selectedCoinDataSet , selectedCoinData })
                                     
                         });
-                    console.log("Fetching Historic Prices");
-                    CoinGeckoClient.coins.fetchMarketChart(coinResp.id, {days : 91, vs_currency : 'inr' , interval : 'daily '})
-                      .then(coinMarketChartData => {
-                          console.log("Historic Prices Fetched");
-                          const historicPrices = coinMarketChartData
-                                                      .data
-                                                      .prices
-                                                      .filter((x,i)=> i > 61) // save last 5 entry as interval field is not supported yet
-                                                      .map(x => { return Math.round(x[1]*10)/10}); // get abs value of price, 2nd param, 1st is timestamp
+                    // console.log("Fetching Historic Prices");
+                    // CoinGeckoClient.coins.fetchMarketChart(coinResp.id, {days : 91, vs_currency : 'inr' , interval : 'daily '})
+                    //   .then(coinMarketChartData => {
+                    //       console.log("Historic Prices Fetched");
+                    //       const historicPrices = coinMarketChartData
+                    //                                   .data
+                    //                                   .prices
+                    //                                   .filter((x,i)=> i > 61) // save last 5 entry as interval field is not supported yet
+                    //                                   .map(x => { return Math.round(x[1]*10)/10}); // get abs value of price, 2nd param, 1st is timestamp
                           
-                      });
+                    //   });
             }
         })
     })
@@ -192,7 +233,17 @@ class App extends Component {
           <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
               <button className='btn'>Upload</button>
           </ReactFileReader>
+
           {
+            this.state.postProcessingDone
+              ? <PortfolioOverview
+                  allCoinData = {this.state.allCoinData}
+                  allCoins = {this.state.allSuportedCoins}
+                />
+              : (<div> </div>)
+          }
+
+          {/* {
             this.state.selectedCoinData !== defaultCoinObject
               ? <div> </div>
               : (<CurrentCoinBalance
@@ -200,7 +251,7 @@ class App extends Component {
                 coinPrice = {this.state.selectedCoinPrice}
                 coinData = {this.state.selectedCoinData}
               />)
-          }
+          } */}
         </header>
 
         
