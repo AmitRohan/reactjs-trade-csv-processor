@@ -149,17 +149,23 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" />
           <label>Upload Report</label>
           <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
               <button className='btn'>Upload</button>
           </ReactFileReader>
-          <CurrentCoinBalance
-            coinToken = {this.state.selectedCoinToken}
-            coinPrice = {this.state.selectedCoinPrice}
-            coinData = {this.state.selectedCoinData}
-          />
+          {
+            this.state.selectedCoinData !== defaultCoinObject
+              ? <div> </div>
+              : (<CurrentCoinBalance
+                coinToken = {this.state.selectedCoinToken}
+                coinPrice = {this.state.selectedCoinPrice}
+                coinData = {this.state.selectedCoinData}
+              />)
+          }
         </header>
+
+        
       </div>
     );
   }
