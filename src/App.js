@@ -166,46 +166,46 @@ class App extends Component {
   }
 
   fetchLatestDataFromCoinGecko = () => {
-    // CoinGeckoClient
-    //     .coins
-    //     .list()
-    //     .then(resp => {
-    //         if(resp.code !== 200){
-    //             return;
-    //         }
-    //         resp.data.map( coinResp => {
-    //             var coinSymbol = coinResp.symbol.toLowerCase();
-    //             if(coinSymbol === this.state.selectedCoinToken.toLowerCase()){
+    CoinGeckoClient
+        .coins
+        .list()
+        .then(resp => {
+            if(resp.code !== 200){
+                return;
+            }
+            resp.data.map( coinResp => {
+                var coinSymbol = coinResp.symbol.toLowerCase();
+                if(coinSymbol === this.state.selectedCoinToken.toLowerCase()){
                     
-    //                 // Get Data
-    //                 console.log("Fetching Latest Coin Data");
-    //                 // CoinGeckoClient.coins.fetch(coinResp.id, {})
-                    //     .then(coinDataReponse => {
+                    // Get Data
+                    console.log("Fetching Latest Coin Data");
+                    CoinGeckoClient.coins.fetch(coinResp.id, {})
+                        .then(coinDataReponse => {
                             console.log("Latest Coin Data Fetched");
                             var selectedCoinName = this.state.selectedCoinToken;
-                            const selectedCoinPrice = 1
-                            // coinDataReponse.data.market_data.current_price.inr
+                            // const selectedCoinPrice = 1
+                            const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
                             var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
                             var defaultResp = Object.assign({},defaultCoinObject);
                             var selectedCoinData = selectedCoinDataSet.reduce(this.analyzeCoinData,defaultResp);
                             this.setState({ selectedCoinPrice })
                             this.setState({selectedCoinDataSet , selectedCoinData })
                             console.log("selectedCoinName", selectedCoinName, selectedCoinDataSet);
-                        // });
-                    // console.log("Fetching Historic Prices");
-                    // CoinGeckoClient.coins.fetchMarketChart(coinResp.id, {days : 91, vs_currency : 'inr' , interval : 'daily '})
-                    //   .then(coinMarketChartData => {
-                    //       console.log("Historic Prices Fetched");
-                    //       const historicPrices = coinMarketChartData
-                    //                                   .data
-                    //                                   .prices
-                    //                                   .filter((x,i)=> i > 61) // save last 5 entry as interval field is not supported yet
-                    //                                   .map(x => { return Math.round(x[1]*10)/10}); // get abs value of price, 2nd param, 1st is timestamp
+                        });
+                    console.log("Fetching Historic Prices");
+                    CoinGeckoClient.coins.fetchMarketChart(coinResp.id, {days : 91, vs_currency : 'inr' , interval : 'daily '})
+                      .then(coinMarketChartData => {
+                          console.log("Historic Prices Fetched");
+                          const historicPrices = coinMarketChartData
+                                                      .data
+                                                      .prices
+                                                      .filter((x,i)=> i > 61) // save last 5 entry as interval field is not supported yet
+                                                      .map(x => { return Math.round(x[1]*10)/10}); // get abs value of price, 2nd param, 1st is timestamp
                           
-                    //   });
-    //         }
-    //     })
-    // })
+                      });
+            }
+        })
+    })
   }
 
   // UI EVENTS
