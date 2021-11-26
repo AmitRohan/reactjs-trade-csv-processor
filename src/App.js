@@ -114,7 +114,8 @@ class App extends Component {
           this.setState({ allCoinPrice })     
 
           var coinDataSet = this.getCoinDataFromReport(this.state.allSuportedCoins[index]);
-          var coinData = coinDataSet.reduce(this.analyzeCoinData,defaultCoinObject);
+          var defaultResp = Object.assign({},defaultCoinObject);
+          var coinData = coinDataSet.reduce(this.analyzeCoinData,defaultResp);
           
           var allCoinData = this.state.allCoinData;
           allCoinData[index] = coinData
@@ -186,7 +187,8 @@ class App extends Component {
                             const selectedCoinPrice = 1
                             // coinDataReponse.data.market_data.current_price.inr
                             var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
-                            var selectedCoinData = selectedCoinDataSet.reduce(this.analyzeCoinData,defaultCoinObject);
+                            var defaultResp = Object.assign({},defaultCoinObject);
+                            var selectedCoinData = selectedCoinDataSet.reduce(this.analyzeCoinData,defaultResp);
                             this.setState({ selectedCoinPrice })
                             this.setState({selectedCoinDataSet , selectedCoinData })
                             console.log("selectedCoinName", selectedCoinName, selectedCoinDataSet);
