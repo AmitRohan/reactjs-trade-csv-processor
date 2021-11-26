@@ -45,7 +45,6 @@ class PortfolioDetails extends Component {
   render(){
     return (
       <div>
-        <h4>Coin Details</h4>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={this.state.coinIndex} aria-label="suported eth coin"  onChange={this.handleCoinSelection}>
             {
