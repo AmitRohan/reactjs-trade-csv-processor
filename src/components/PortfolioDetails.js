@@ -1,5 +1,5 @@
+import { Tab, Tabs , Box} from '@mui/material';
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import CurrentCoinBalance from './CurrentCoinBalance';
 
 const defaultCoinObject = {
@@ -10,54 +10,35 @@ const defaultCoinObject = {
   moneyInvestedWithFees : 0
 };
 
-
-const Tab = styled.button`
-  font-size: 20px;
-  padding: 10px 60px;
-  cursor: pointer;
-  opacity: 0.6;
-  background: white;
-  border: 0;
-  outline: 0;
-  ${({ active }) =>
-    active &&
-    `
-    border-bottom: 2px solid black;
-    opacity: 1;
-  `}
-`;
-const ButtonGroup = styled.div`
-  display: flex;
-`;
-
 class PortfolioDetails extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       active : "",
+      coinIndex : 0,
       selectedCoinData : defaultCoinObject,
       selectedCoinDataSet : [],
       selectedCoinPrice : -1,
     } 
   }
+
+  handleCoinSelection = (e,coinIndex) => {
+    
+    var coin = this.props.allSuportedCoins[coinIndex] || "";
+
+    if(this.state.active === coin){
+      return;
+    }
+    this.setState({ active : coin, coinIndex})
+    this.props.updateSelectedToken(coin);
+    
+  }
+
   getTabs = () =>  {
     var allSuportedCoins = this.props.allSuportedCoins
     return allSuportedCoins.map( coin => {
-      return (<Tab
-                key={coin}
-                active={this.state.active === coin}
-                onClick={() => { 
-                  if(this.state.active === coin){
-                    return;
-                  }
-                  this.props.updateSelectedToken(coin);
-                  this.setState({ active : coin})
-                  console.log(this.props);
-                }}
-              >
-                {coin}
-              </Tab>)
+      return (<Tab label={coin} key={coin}/>)
     });
   }
 
@@ -65,11 +46,13 @@ class PortfolioDetails extends Component {
     return (
       <div>
         <h4>Coin Details</h4>
-        <ButtonGroup>
-          {
-            this.getTabs()
-          }
-        </ButtonGroup>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={this.state.coinIndex} aria-label="suported eth coin"  onChange={this.handleCoinSelection}>
+            {
+              this.getTabs()
+            }
+          </Tabs>
+        </Box>
         {
             this.props.selectedCoinToken === null
               ? <div> Select a token </div>

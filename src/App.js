@@ -2,11 +2,10 @@ import logo from './logo.svg';
 import './App.css';
 import ReactFileReader from 'react-file-reader';
 import React, { Component } from 'react';
-import { Button } from '@material-ui/core';
-
 import CurrentCoinBalance from './components/CurrentCoinBalance';
 import PortfolioOverview from './components/PortfolioOverview';
 import PortfolioDetails from './components/PortfolioDetails';
+import { Button } from '@mui/material';
 const CSVPasrse = require('csv-parse');
 
 const CoinGecko = require('coingecko-api');
@@ -226,7 +225,7 @@ class App extends Component {
                   <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" />
                   <label>Upload Report</label>
                   <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
-                      <Button color="primary">Upload</Button>
+                      <Button variant="outlined">Upload</Button>
                   </ReactFileReader>
                 </header> 
               : 
