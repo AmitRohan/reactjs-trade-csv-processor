@@ -231,7 +231,7 @@ class App extends Component {
                 {/* <MenuIcon /> */}
               </IconButton>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                YOLO
+                { this.state.postProcessingDone ? "Detail" : "Upload your file"}
               </Typography>
               <Button color="inherit">Reset</Button>
             </Toolbar>
