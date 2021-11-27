@@ -58,7 +58,7 @@ class App extends Component {
           var allSuportedCoins = 
                         this.getAllCoinsFromReport(fileData)
                           .filter( coin =>{
-                              // return ( -1 != ["BTC","ETH","DOGE"].indexOf(coin))
+                          //     return ( -1 != ["BTC","ETH","DOGE"].indexOf(coin))
                               return ( -1 !== ["BTC","ETH"].indexOf(coin))
                           });
           this.setState( { allSuportedCoins , fileData })
@@ -77,24 +77,28 @@ class App extends Component {
     return [...new Set(report.map((row) => row.Coin))] 
   }
 
-  analyzeCoinData = (prevTransaction,currentTransaction) => {
-    var newRecord = Object.assign({},prevTransaction);
-    if(currentTransaction.SIDE==='BUY'){
-      newRecord.coinsOwned += parseFloat(currentTransaction.Crypto_Amt)
-      newRecord.moneyInvested -= ((parseFloat(currentTransaction.Crypto_Amt)) * (parseFloat(currentTransaction.Rate)))
-      newRecord.moneyInvestedWithFees -= parseFloat(currentTransaction.FIAT)
-    }else{
-      newRecord.coinsOwned -= parseFloat(currentTransaction.Crypto_Amt)
-      newRecord.moneyInvested += ((parseFloat(currentTransaction.Crypto_Amt)) * (parseFloat(currentTransaction.Rate)))
-      newRecord.moneyInvestedWithFees += parseFloat(currentTransaction.FIAT)
-    }
-    
-    newRecord.fee += parseFloat(currentTransaction.Fee)
-    newRecord.currentValue = (newRecord.coinsOwned * this.state.selectedCoinPrice)
-    if(newRecord.currentValue !== 0)
-      newRecord.currentValue -= newRecord.fee
+  getCoinDataAnalyzer = (coinPrice) => {
+      return (prevTransaction,currentTransaction) => {
+        var newRecord = Object.assign({},prevTransaction);
+        
+        if(currentTransaction.SIDE==='BUY'){
+          newRecord.coinsOwned += parseFloat(currentTransaction.Crypto_Amt)
+          newRecord.moneyInvested -= ((parseFloat(currentTransaction.Crypto_Amt)) * (parseFloat(currentTransaction.Rate)))
+          newRecord.moneyInvestedWithFees -= parseFloat(currentTransaction.FIAT)
+        }else{
+          newRecord.coinsOwned -= parseFloat(currentTransaction.Crypto_Amt)
+          newRecord.moneyInvested += ((parseFloat(currentTransaction.Crypto_Amt)) * (parseFloat(currentTransaction.Rate)))
+          newRecord.moneyInvestedWithFees += parseFloat(currentTransaction.FIAT)
+        }
+        
+        newRecord.fee += parseFloat(currentTransaction.Fee)
+        newRecord.currentValue = (newRecord.coinsOwned * coinPrice)
 
-    return newRecord  
+        if(newRecord.currentValue !== 0)
+          newRecord.currentValue -= newRecord.fee
+    
+        return newRecord  
+      }
   }
   
   postProcessingCheckpoints = 0;
@@ -115,7 +119,7 @@ class App extends Component {
 
           var coinDataSet = this.getCoinDataFromReport(this.state.allSuportedCoins[index]);
           var defaultResp = Object.assign({},defaultCoinObject);
-          var coinData = coinDataSet.reduce(this.analyzeCoinData,defaultResp);
+          var coinData = coinDataSet.reduce(this.getCoinDataAnalyzer(coinPrice),defaultResp);
           
           var allCoinData = this.state.allCoinData;
           allCoinData[index] = coinData
@@ -123,7 +127,10 @@ class App extends Component {
 
 
           cb();
-      }).catch(err => console.log(err));
+      }).catch(err => {
+        console.log(err)
+        cb();
+      });
   }
 
   updateLatestCoinPricesFromCoinGecko = () => {
@@ -222,7 +229,7 @@ class App extends Component {
     var selectedCoinName = this.state.selectedCoinToken;
     var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
     var defaultResp = Object.assign({},defaultCoinObject);
-    var selectedCoinData = selectedCoinDataSet.reduce(this.analyzeCoinData,defaultResp);
+    var selectedCoinData = selectedCoinDataSet.reduce(this.getCoinDataAnalyzer(selectedCoinPrice),defaultResp);
     this.setState({ selectedCoinPrice })
     this.setState({selectedCoinDataSet , selectedCoinData })
 
