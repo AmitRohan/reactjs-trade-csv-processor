@@ -12,7 +12,7 @@ const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
 //use ["ALL"] to support all coins
-const clientEndAllowedCoins = ["ETH"];
+const clientEndAllowedCoins = ["ETH","BTC"];
 
 const defaultCoinObject = {
   coinsOwned : 0,
@@ -33,6 +33,7 @@ const emptyState = {
   allCoinPrice : [],
   allSuportedCoins : [],
   selectedCoinData : defaultCoinObject,
+  selectedCoinHistoricPrice : [],
   selectedCoinDataSet : [],
   selectedCoinPrice : -1,
   selectedCoinToken : ""
@@ -201,7 +202,6 @@ class App extends Component {
                     
                     // Get Data
                     this.fetchCoinPrice(coinResp.id)
-                    
                     this.fetchHistoricPrices(coinResp.id)
             }
         })
@@ -224,12 +224,10 @@ class App extends Component {
       .coins
       .fetchMarketChart(coinId, {days : 91, vs_currency : 'inr' , interval : 'daily '})
       .then(coinMarketChartData => {
-          const historicPrices = coinMarketChartData
-                                      .data
-                                      .prices
-                                      .filter((x,i)=> i > 61) // save last 5 entry as interval field is not supported yet
-                                      .map(x => { return Math.round(x[1]*10)/10}); // get abs value of price, 2nd param, 1st is timestamp
-          
+          const selectedCoinHistoricPrice = coinMarketChartData
+                                              .data
+                                              .prices
+        this.setState( { selectedCoinHistoricPrice });
       }).catch(err => console.log(err));
   }
 
@@ -244,8 +242,8 @@ class App extends Component {
     var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
     var defaultResp = Object.assign({},defaultCoinObject);
     var selectedCoinData = selectedCoinDataSet.reduce(this.getCoinDataAnalyzer(selectedCoinPrice),defaultResp);
-    this.setState({ selectedCoinPrice })
-    this.setState({selectedCoinDataSet , selectedCoinData })
+    
+    this.setState({selectedCoinPrice , selectedCoinDataSet , selectedCoinData })
 
   }
 
@@ -297,6 +295,7 @@ class App extends Component {
                   selectedCoinToken = { this.state.selectedCoinToken }
                   selectedCoinPrice = { this.state.selectedCoinPrice}
                   selectedCoinData = { this.state.selectedCoinData}
+                  selectedCoinHistoricPrice = { this.state.selectedCoinHistoricPrice }
                   updateSelectedToken = {this.handleNewTokenSelection}
                   allSuportedCoins = {this.state.allSuportedCoins} />
               </div>
