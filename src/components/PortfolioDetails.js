@@ -15,6 +15,7 @@ class PortfolioDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      firstSelect : false,
       active : "",
       coinIndex : 0,
       selectedCoinData : defaultCoinObject,
@@ -24,13 +25,14 @@ class PortfolioDetails extends Component {
   }
 
   handleCoinSelection = (e,coinIndex) => {
-    
+
     var coin = this.props.allSuportedCoins[coinIndex] || "";
 
     if(this.state.active === coin){
       return;
     }
-    this.setState({ active : coin, coinIndex})
+
+    this.setState({ firstSelect : true , active : coin, coinIndex})
     this.props.updateSelectedToken(coin);
     
   }
@@ -54,6 +56,7 @@ class PortfolioDetails extends Component {
         </Box>
         {
             this.props.selectedCoinToken === null
+            || !this.state.firstSelect
               ? <div> Select a token </div>
               : (<CurrentCoinBalance
                   coinToken = {this.props.selectedCoinToken}
