@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/reactjs-trade-csv-processor/static/css/main.8c8b27cf.chunk.css",
-    "main.js": "/reactjs-trade-csv-processor/static/js/main.6ce2ffbd.chunk.js",
-    "main.js.map": "/reactjs-trade-csv-processor/static/js/main.6ce2ffbd.chunk.js.map",
-    "runtime-main.js": "/reactjs-trade-csv-processor/static/js/runtime-main.42af9557.js",
-    "runtime-main.js.map": "/reactjs-trade-csv-processor/static/js/runtime-main.42af9557.js.map",
-    "static/js/2.360d33bd.chunk.js": "/reactjs-trade-csv-processor/static/js/2.360d33bd.chunk.js",
-    "static/js/2.360d33bd.chunk.js.map": "/reactjs-trade-csv-processor/static/js/2.360d33bd.chunk.js.map",
-    "static/js/3.b1cb5171.chunk.js": "/reactjs-trade-csv-processor/static/js/3.b1cb5171.chunk.js",
-    "static/js/3.b1cb5171.chunk.js.map": "/reactjs-trade-csv-processor/static/js/3.b1cb5171.chunk.js.map",
+    "main.js": "/reactjs-trade-csv-processor/static/js/main.2e114ac6.chunk.js",
+    "main.js.map": "/reactjs-trade-csv-processor/static/js/main.2e114ac6.chunk.js.map",
+    "runtime-main.js": "/reactjs-trade-csv-processor/static/js/runtime-main.fadea575.js",
+    "runtime-main.js.map": "/reactjs-trade-csv-processor/static/js/runtime-main.fadea575.js.map",
+    "static/js/2.8eeda9ba.chunk.js": "/reactjs-trade-csv-processor/static/js/2.8eeda9ba.chunk.js",
+    "static/js/2.8eeda9ba.chunk.js.map": "/reactjs-trade-csv-processor/static/js/2.8eeda9ba.chunk.js.map",
+    "static/js/3.d7c0f80c.chunk.js": "/reactjs-trade-csv-processor/static/js/3.d7c0f80c.chunk.js",
+    "static/js/3.d7c0f80c.chunk.js.map": "/reactjs-trade-csv-processor/static/js/3.d7c0f80c.chunk.js.map",
     "index.html": "/reactjs-trade-csv-processor/index.html",
     "static/css/main.8c8b27cf.chunk.css.map": "/reactjs-trade-csv-processor/static/css/main.8c8b27cf.chunk.css.map",
-    "static/js/2.360d33bd.chunk.js.LICENSE.txt": "/reactjs-trade-csv-processor/static/js/2.360d33bd.chunk.js.LICENSE.txt",
+    "static/js/2.8eeda9ba.chunk.js.LICENSE.txt": "/reactjs-trade-csv-processor/static/js/2.8eeda9ba.chunk.js.LICENSE.txt",
     "static/media/logo.6ce24c58.svg": "/reactjs-trade-csv-processor/static/media/logo.6ce24c58.svg"
   },
   "entrypoints": [
-    "static/js/runtime-main.42af9557.js",
-    "static/js/2.360d33bd.chunk.js",
+    "static/js/runtime-main.fadea575.js",
+    "static/js/2.8eeda9ba.chunk.js",
     "static/css/main.8c8b27cf.chunk.css",
-    "static/js/main.6ce2ffbd.chunk.js"
+    "static/js/main.2e114ac6.chunk.js"
   ]
 }
