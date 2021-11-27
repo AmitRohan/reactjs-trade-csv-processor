@@ -11,6 +11,8 @@ const CSVPasrse = require('csv-parse');
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
+const clientEndAllowedCoins = ["BTC","ETH","DOGE"];
+
 const defaultCoinObject = {
   coinsOwned : 0,
   currentValue : 0,
@@ -53,15 +55,26 @@ class App extends Component {
         // Use reader.result
         CSVPasrse(reader.result, {columns: true, trim: true}, (err,fileData) => {
 
-          this.setState({ fileUploaded: true, postProcessingCheckpoints : 0});
+          this.setState({ fileUploaded: true, postProcessingCheckpoints : 0, fileData});
+          
+          var coinDataAnalyzer = this.getCoinDataAnalyzer(0);
+          var allSuportedCoins = this.getAllCoinsFromReport(fileData)
+                          .filter( coinName => 
+                            (this
+                              .getCoinDataFromReport(coinName)
+                              .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
+                              .coinsOwned > 0)
+                          ).filter( coin =>{
+                              return ( -1 !== clientEndAllowedCoins.indexOf(coin))
+                              // return ( -1 !== ["BTC","ETH"].indexOf(coin))
+                          })
+                          // Coins with Balane > 0
+                          
+          
+                  
 
-          var allSuportedCoins = 
-                        this.getAllCoinsFromReport(fileData)
-                          .filter( coin =>{
-                          //     return ( -1 != ["BTC","ETH","DOGE"].indexOf(coin))
-                              return ( -1 !== ["BTC","ETH"].indexOf(coin))
-                          });
-          this.setState( { allSuportedCoins , fileData })
+          
+          this.setState( { allSuportedCoins })
           this.updateLatestCoinPricesFromCoinGecko();
 
         }) 
