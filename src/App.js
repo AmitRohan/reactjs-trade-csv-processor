@@ -11,7 +11,8 @@ const CSVPasrse = require('csv-parse');
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
-const clientEndAllowedCoins = ["BTC","ETH","DOGE"];
+//use ["ALL"] to support all coins
+const clientEndAllowedCoins = ["ETH"];
 
 const defaultCoinObject = {
   coinsOwned : 0,
@@ -65,7 +66,7 @@ class App extends Component {
                               .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
                               .coinsOwned > 0)
                           ).filter( coin =>{
-                              return ( -1 !== clientEndAllowedCoins.indexOf(coin))
+                              return ( -1 !== clientEndAllowedCoins.indexOf("ALL") || -1 !== clientEndAllowedCoins.indexOf(coin) )
                               // return ( -1 !== ["BTC","ETH"].indexOf(coin))
                           })
                           // Coins with Balane > 0
