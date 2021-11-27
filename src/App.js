@@ -4,7 +4,7 @@ import ReactFileReader from 'react-file-reader';
 import React, { Component } from 'react';
 import PortfolioOverview from './components/PortfolioOverview';
 import PortfolioDetails from './components/PortfolioDetails';
-import { AppBar, Button, IconButton, Toolbar, Typography } from '@mui/material';
+import { AppBar, Backdrop, Button, CircularProgress, IconButton, Toolbar, Typography } from '@mui/material';
 // import MenuIcon from '@mui/icons-material/Menu';
 const CSVPasrse = require('csv-parse');
 
@@ -21,6 +21,7 @@ const defaultCoinObject = {
 
 const emptyState = {
   fileUploaded: false,
+  showLoader : false,
   postProcessingDone : false,
   postProcessingCheckpoints : 0,
   fileData : [],
@@ -45,7 +46,7 @@ class App extends Component {
     // Set Checkpoint Size
     this.postProcessingCheckpointCounter = 0;
     var postProcessingCheckpoints = 999999;
-    this.setState({ postProcessingCheckpoints , postProcessingDone : false});
+    this.setState({ postProcessingCheckpoints , postProcessingDone : false, showLoader : true});
 
     var reader = new FileReader();
     reader.onload = (e) => {
@@ -151,7 +152,7 @@ class App extends Component {
             var toRepeat = () => {
               if(postProcessingCheckpoints <= this.postProcessingCheckpointCounter
                   && !this.state.postProcessingDone){
-                this.setState({ postProcessingDone : true})
+                this.setState({ postProcessingDone : true, showLoader : false})
                 return;
               }
               this.fetchCoinDataUsingId(() => { 
@@ -262,7 +263,7 @@ class App extends Component {
           {
             !this.state.postProcessingDone
               ? <header className="App-header"> 
-                  <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" />
+                  {/* <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" /> */}
                   <label>In Deapth Analysis of Trade Report</label>
                 </header> 
               : 
@@ -278,7 +279,14 @@ class App extends Component {
                   updateSelectedToken = {this.handleNewTokenSelection}
                   allSuportedCoins = {this.state.allSuportedCoins} />
               </div>
+              
           }
+          <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={this.state.showLoader}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
       </div>
     );
   }
