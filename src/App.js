@@ -258,10 +258,7 @@ class App extends Component {
             !this.state.postProcessingDone
               ? <header className="App-header"> 
                   <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" />
-                  <label>Upload Report</label>
-                  <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
-                      <Button variant="outlined">Upload</Button>
-                  </ReactFileReader>
+                  <label>In Deapth Analysis of Trade Report</label>
                 </header> 
               : 
               <div>
