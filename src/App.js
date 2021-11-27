@@ -186,12 +186,7 @@ class App extends Component {
                             var selectedCoinName = this.state.selectedCoinToken;
                             // const selectedCoinPrice = 1
                             const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
-                            var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
-                            var defaultResp = Object.assign({},defaultCoinObject);
-                            var selectedCoinData = selectedCoinDataSet.reduce(this.analyzeCoinData,defaultResp);
-                            this.setState({ selectedCoinPrice })
-                            this.setState({selectedCoinDataSet , selectedCoinData })
-                            console.log("selectedCoinName", selectedCoinName, selectedCoinDataSet);
+                            this.updateSelectedCoinInState(selectedCoinPrice);
                         });
                     console.log("Fetching Historic Prices");
                     CoinGeckoClient.coins.fetchMarketChart(coinResp.id, {days : 91, vs_currency : 'inr' , interval : 'daily '})
@@ -210,6 +205,16 @@ class App extends Component {
   }
 
   // UI EVENTS
+
+  updateSelectedCoinInState = (selectedCoinPrice) => {
+    var selectedCoinName = this.state.selectedCoinToken;
+    var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
+    var defaultResp = Object.assign({},defaultCoinObject);
+    var selectedCoinData = selectedCoinDataSet.reduce(this.analyzeCoinData,defaultResp);
+    this.setState({ selectedCoinPrice })
+    this.setState({selectedCoinDataSet , selectedCoinData })
+
+  }
 
   handleNewTokenSelection = (selectedCoinToken) => {
     this.setState( { selectedCoinToken })
