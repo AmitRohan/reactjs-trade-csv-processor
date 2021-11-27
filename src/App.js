@@ -20,24 +20,26 @@ const defaultCoinObject = {
   moneyInvestedWithFees : 0
 };
 
+const emptyState = {
+  fileUploaded: false,
+  postProcessingDone : false,
+  postProcessingCheckpoints : 0,
+  fileData : [],
+  allCoinData : [],
+  allCoinCoinGeckoId : [],
+  allCoinPrice : [],
+  allSuportedCoins : [],
+  selectedCoinData : defaultCoinObject,
+  selectedCoinDataSet : [],
+  selectedCoinPrice : -1,
+  selectedCoinToken : ""
+}
+
 class App extends Component {
   postProcessingCheckpointCounter = 0;
   constructor(props) {
     super(props);
-    this.state = {
-      fileUploaded: false,
-      postProcessingDone : false,
-      postProcessingCheckpoints : 0,
-      fileData : [],
-      allCoinData : [],
-      allCoinCoinGeckoId : [],
-      allCoinPrice : [],
-      allSuportedCoins : [],
-      selectedCoinData : defaultCoinObject,
-      selectedCoinDataSet : [],
-      selectedCoinPrice : -1,
-      selectedCoinToken : ""
-    }
+    this.state = emptyState
   }
   handleFiles = files => {
 
@@ -206,6 +208,10 @@ class App extends Component {
 
   // UI EVENTS
 
+  resetAll = () => {
+    this.setState(emptyState)
+  }
+
   updateSelectedCoinInState = (selectedCoinPrice) => {
     var selectedCoinName = this.state.selectedCoinToken;
     var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
@@ -238,7 +244,14 @@ class App extends Component {
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 { this.state.postProcessingDone ? "Detail" : "Upload your file"}
               </Typography>
-              <Button color="inherit">Reset</Button>
+                { this.state.postProcessingDone ? 
+                    <Button onClick={this.resetAll} color="inherit">Reset</Button>
+                    : <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
+                          <Button color="inherit" >Upload</Button>
+                      </ReactFileReader>
+                }
+
+              
             </Toolbar>
           </AppBar>
           {
