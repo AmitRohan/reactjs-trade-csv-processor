@@ -1,22 +1,18 @@
+import { Grid} from '@mui/material';
 import React, { Component } from 'react';
 import CoinOverview from './CoinOverview';
 
 class PortfolioOverview extends Component {
-  
-
-  constructor(props) {
-    super(props);
-    
-  }
 
   getIndividualCards = () =>  {
     var allCoinData = this.props.allCoinData
     return allCoinData.map( (coin, id) => {
-      return (<CoinOverview
-                key= { id}
-                coinToken = { this.props.allCoins[id]}
-                coinData = { coin }
-            />)
+      return (
+        <Grid item xs={4} key= { id}>
+            <CoinOverview
+              coinToken = { this.props.allCoins[id]}
+              coinData = { coin }/>
+        </Grid>)
     });
   }
   
@@ -24,9 +20,13 @@ class PortfolioOverview extends Component {
     return (
       <div>
         <h4>Portfolio Overview</h4>
+
+        <Grid container spacing={2}>
+
         {
           this.getIndividualCards()
         }
+        </Grid>
       </div>
     );
   }
