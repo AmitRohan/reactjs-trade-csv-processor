@@ -12,7 +12,7 @@ const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
 //use ["ALL"] to support all coins
-const clientEndAllowedCoins = ["ETH","BTC"];
+const clientEndAllowedCoins = ["ALL"];
 
 const defaultCoinObject = {
   coinsOwned : 0,
