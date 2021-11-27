@@ -77,16 +77,14 @@ class App extends Component {
   }
 
   analyzeCoinData = (prevTransaction,currentTransaction) => {
-    var newRecord = prevTransaction;
+    var newRecord = Object.assign({},prevTransaction);
     if(currentTransaction.SIDE==='BUY'){
       newRecord.coinsOwned += parseFloat(currentTransaction.Crypto_Amt)
-      newRecord.moneyInvested -= ((parseFloat(currentTransaction.Crypto_Amt)*100000000) * (parseFloat(currentTransaction.Rate)*100000000))
-      newRecord.moneyInvested /= 10000000000000000
+      newRecord.moneyInvested -= ((parseFloat(currentTransaction.Crypto_Amt)) * (parseFloat(currentTransaction.Rate)))
       newRecord.moneyInvestedWithFees -= parseFloat(currentTransaction.FIAT)
     }else{
       newRecord.coinsOwned -= parseFloat(currentTransaction.Crypto_Amt)
-      newRecord.moneyInvested += ((parseFloat(currentTransaction.Crypto_Amt)*100000000) * (parseFloat(currentTransaction.Rate)*100000000))
-      newRecord.moneyInvested /= 10000000000000000
+      newRecord.moneyInvested += ((parseFloat(currentTransaction.Crypto_Amt)) * (parseFloat(currentTransaction.Rate)))
       newRecord.moneyInvestedWithFees += parseFloat(currentTransaction.FIAT)
     }
     
