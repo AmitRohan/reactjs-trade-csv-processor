@@ -68,14 +68,14 @@ class CurrentCoinBalance extends Component {
             Current Value
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {this.props.coinData.currentValue}
+            {Math.abs(this.props.coinData.currentValue)}
           </Typography>
 
           <Typography gutterBottom variant="h6" component="div">
             Money Invested (Without fee)
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {this.props.coinData.moneyInvested}
+            {Math.abs(this.props.coinData.moneyInvested)}
           </Typography>
 
 
@@ -91,7 +91,7 @@ class CurrentCoinBalance extends Component {
             Money Invested (With fee)
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {this.props.coinData.moneyInvestedWithFees}
+            {Math.abs(this.props.coinData.moneyInvestedWithFees)}
           </Typography>
 
           {
