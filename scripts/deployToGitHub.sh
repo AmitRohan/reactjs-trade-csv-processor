@@ -1,2 +1,2 @@
-npm run deploy
 nom run pre-deploy
+npm run deploy
