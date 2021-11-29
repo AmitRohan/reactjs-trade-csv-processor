@@ -52,7 +52,9 @@ class App extends Component {
       console.log("Data alrady cached",cachedData)
 
       this.initialProcessingChecks();
-      this.handleProcessedData(cachedData)
+      setTimeout( () => {
+        this.handleProcessedData(cachedData)
+      },200)
       
     }
   }
