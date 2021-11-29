@@ -19,16 +19,12 @@ class PortfolioOverview extends Component {
   
   render(){
     return (
-      <div>
-        <h4>Portfolio Overview</h4>
-
-        <Grid container spacing={2}>
+      <Grid container spacing={2}>
 
         {
           this.getIndividualCards()
         }
         </Grid>
-      </div>
     );
   }
 }
