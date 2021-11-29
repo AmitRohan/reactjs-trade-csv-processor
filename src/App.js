@@ -33,10 +33,16 @@ const emptyState = {
   allCoinData : [],
   allCoinCoinGeckoId : [],
   allCoinPrice : [],
+  allCoinIcon : [],
   allSuportedCoins : [],
   selectedCoinData : defaultCoinObject,
   selectedCoinHistoricPrice : [],
   selectedCoinDataSet : [],
+  selectedCoinIcon : {
+    thumb : null,
+    small : null,
+    large : null
+  },
   selectedCoinPrice : -1,
   selectedCoinToken : ""
 }
@@ -161,7 +167,13 @@ class App extends Component {
           const coinPrice = coinDataReponse.data.market_data.current_price.inr
           var allCoinPrice = this.state.allCoinPrice;
           allCoinPrice[index] = coinPrice
-          this.setState({ allCoinPrice })     
+
+          const coinIcon = coinDataReponse.data.image
+
+          var allCoinIcon = this.state.allCoinIcon;
+          allCoinIcon[index] = coinIcon
+
+          this.setState({ allCoinPrice , allCoinIcon})     
 
           var coinDataSet = this.getCoinDataFromReport(this.state.allSuportedCoins[index]);
           var defaultResp = Object.assign({},defaultCoinObject);
@@ -247,7 +259,8 @@ class App extends Component {
           console.log(coinDataReponse)
           // const selectedCoinPrice = 1
           const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
-          this.updateSelectedCoinInState(selectedCoinPrice);
+          const selectedCoinIcon = coinDataReponse.data.image
+          this.updateSelectedCoinInState(selectedCoinPrice, selectedCoinIcon );
       }).catch(console.log);
   }
 
@@ -600,13 +613,13 @@ class App extends Component {
     this.setState(emptyState)
   }
 
-  updateSelectedCoinInState = (selectedCoinPrice) => {
+  updateSelectedCoinInState = (selectedCoinPrice, selectedCoinIcon) => {
     var selectedCoinName = this.state.selectedCoinToken;
     var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
     var defaultResp = Object.assign({},defaultCoinObject);
     var selectedCoinData = selectedCoinDataSet.reduce(this.getCoinDataAnalyzer(selectedCoinPrice),defaultResp);
-    
-    this.setState({selectedCoinPrice , selectedCoinDataSet , selectedCoinData })
+    console.log(this.selectedCoinIcon)
+    this.setState({selectedCoinPrice , selectedCoinDataSet , selectedCoinData , selectedCoinIcon})
 
   }
 
@@ -654,16 +667,19 @@ class App extends Component {
               : 
               <div>
                 <PortfolioOverview
+                  allCoinIcon = {this.state.allCoinIcon}
                   allCoinData = {this.state.allCoinData}
                   allCoins = {this.state.allSuportedCoins}
                 />
                 <PortfolioDetails
+                  selectedCoinIcon = { this.state.selectedCoinIcon }
                   selectedCoinToken = { this.state.selectedCoinToken }
                   selectedCoinPrice = { this.state.selectedCoinPrice}
                   selectedCoinData = { this.state.selectedCoinData}
                   selectedCoinDataSet = { this.state.selectedCoinDataSet}
                   selectedCoinHistoricPrice = { this.state.selectedCoinHistoricPrice }
                   updateSelectedToken = {this.handleNewTokenSelection}
+                  allCoinIcon = {this.state.allCoinIcon}
                   allSuportedCoins = {this.state.allSuportedCoins} />
               </div>
               
