@@ -13,6 +13,7 @@ const CoinGeckoClient = new CoinGecko();
 
 //use ["ALL"] to support all coins
 const clientEndAllowedCoins = ["ALL"];
+const LOCAL_DATA = "XYZZYSPOON!"
 
 const defaultCoinObject = {
   coinsOwned : 0,
@@ -44,10 +45,24 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = emptyState
+
+    var cachedData = localStorage.getItem(LOCAL_DATA);
+    if(cachedData != null && Array.isArray(cachedData)){
+      console.log("Data alrady cached")
+
+      this.postProcessingCheckpointCounter = 0;
+      var postProcessingCheckpoints = 999999;
+      this.setState({ postProcessingCheckpoints , postProcessingDone : false, showLoader : true});
+
+      this.handleProcessedData(cachedData)
+    }
   }
 
 
   handleProcessedData = (fileData) => {
+
+    localStorage.setItem(LOCAL_DATA,fileData)
+
     this.setState({ fileUploaded: true, postProcessingCheckpoints : 0, fileData});
           
     var coinDataAnalyzer = this.getCoinDataAnalyzer(0);
