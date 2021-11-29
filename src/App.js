@@ -156,7 +156,7 @@ class App extends Component {
 
     CoinGeckoClient
       .coins
-      .fetch(this.state.allCoinCoinGeckoId[index], {})
+      .fetch(this.state.allCoinCoinGeckoId[index], { sparkline : true , developer_data : false , community_data : false , tickers : false})
       .then(coinDataReponse => {
           const coinPrice = coinDataReponse.data.market_data.current_price.inr
           var allCoinPrice = this.state.allCoinPrice;
@@ -242,8 +242,9 @@ class App extends Component {
   fetchCoinPrice = (coinId) => {
     CoinGeckoClient
       .coins
-      .fetch(coinId, {})
+      .fetch(coinId, { sparkline : true , developer_data : false , community_data : false , tickers : false})
       .then(coinDataReponse => {
+          console.log(coinDataReponse)
           // const selectedCoinPrice = 1
           const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
           this.updateSelectedCoinInState(selectedCoinPrice);
