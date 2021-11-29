@@ -1,4 +1,4 @@
-import { Tab, Tabs , Box} from '@mui/material';
+import { Tab, Tabs , Box, Avatar} from '@mui/material';
 import React, { Component } from 'react';
 import CurrentCoinBalance from './CurrentCoinBalance';
 
@@ -39,8 +39,10 @@ class PortfolioDetails extends Component {
 
   getTabs = () =>  {
     var allSuportedCoins = this.props.allSuportedCoins
-    return allSuportedCoins.map( coin => {
-      return (<Tab label={coin} key={coin}/>)
+    return allSuportedCoins.map( (coin,pos) => {
+      var avatarIcon = <Avatar alt="" src={this.props.allCoinIcon[pos].small}  sx={{ width: 24, height: 24 }}/>
+      return (
+        <Tab icon={avatarIcon} iconPosition="start" label={coin} key={coin} />)
     });
   }
 
@@ -62,6 +64,7 @@ class PortfolioDetails extends Component {
                   coinToken = {this.props.selectedCoinToken}
                   coinPrice = {this.props.selectedCoinPrice}
                   coinData = {this.props.selectedCoinData}
+                  coinIcon = {this.props.selectedCoinIcon}
                   coinDataSet = {this.props.selectedCoinDataSet}
                   coinHistoricPrice = {this.props.selectedCoinHistoricPrice}
                 />)
