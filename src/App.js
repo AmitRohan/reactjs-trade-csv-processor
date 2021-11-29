@@ -55,7 +55,7 @@ class App extends Component {
 
     var cachedData = JSON.parse(localStorage.getItem(LOCAL_DATA));
     if(cachedData != null && Array.isArray(cachedData)){
-      console.log("Data alrady cached",cachedData)
+      console.log("Data alrady cached")
 
       this.initialProcessingChecks();
       setTimeout( () => {
@@ -618,7 +618,6 @@ class App extends Component {
     var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
     var defaultResp = Object.assign({},defaultCoinObject);
     var selectedCoinData = selectedCoinDataSet.reduce(this.getCoinDataAnalyzer(selectedCoinPrice),defaultResp);
-    console.log(this.selectedCoinIcon)
     this.setState({selectedCoinPrice , selectedCoinDataSet , selectedCoinData , selectedCoinIcon})
 
   }
