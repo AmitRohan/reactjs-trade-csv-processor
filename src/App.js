@@ -63,7 +63,7 @@ class App extends Component {
 
     localStorage.setItem(LOCAL_DATA,fileData)
 
-    this.setState({ fileUploaded: true, postProcessingCheckpoints : 0, fileData});
+    this.setState({ fileUploaded: true, fileData});
           
     var coinDataAnalyzer = this.getCoinDataAnalyzer(0);
     var allSuportedCoins = this.getAllCoinsFromReport(fileData)
@@ -198,7 +198,7 @@ class App extends Component {
             toRepeat();
 
 
-    })
+    }).catch(console.log);
   }
 
   fetchSelectedCoinIdFromCoinGecko = () => {
@@ -218,7 +218,7 @@ class App extends Component {
                     this.fetchHistoricPrices(coinResp.id)
             }
         })
-    }).catch(err => console.log(err));
+    }).catch(console.log);
   }
 
   fetchCoinPrice = (coinId) => {
@@ -229,7 +229,7 @@ class App extends Component {
           // const selectedCoinPrice = 1
           const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
           this.updateSelectedCoinInState(selectedCoinPrice);
-      }).catch(err => console.log(err));
+      }).catch(console.log);
   }
 
   fetchHistoricPrices = (coinId) => {
@@ -241,7 +241,7 @@ class App extends Component {
                                               .data
                                               .prices
         this.setState( { selectedCoinHistoricPrice });
-      }).catch(err => console.log(err));
+      }).catch(console.log);
   }
 
   // UI EVENTS
