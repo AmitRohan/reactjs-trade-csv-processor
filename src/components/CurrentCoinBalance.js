@@ -143,7 +143,7 @@ class CurrentCoinBalance extends Component {
                       
                     </ListItemIcon>
                     <ListItemText
-                      primary={ transaction.Crypto_Amt + " " + transaction.SIDE + " for " + transaction.FIAT}
+                      primary={ transaction.Crypto_Amt + " " + transaction.Desc + " for " + transaction.FIAT}
                       secondary={secondaryComp}
                     />
                   </ListItem>
