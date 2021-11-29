@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/reactjs-trade-csv-processor/static/css/main.8c8b27cf.chunk.css",
-    "main.js": "/reactjs-trade-csv-processor/static/js/main.c3130543.chunk.js",
-    "main.js.map": "/reactjs-trade-csv-processor/static/js/main.c3130543.chunk.js.map",
+    "main.js": "/reactjs-trade-csv-processor/static/js/main.a2417de2.chunk.js",
+    "main.js.map": "/reactjs-trade-csv-processor/static/js/main.a2417de2.chunk.js.map",
     "runtime-main.js": "/reactjs-trade-csv-processor/static/js/runtime-main.2f26391c.js",
     "runtime-main.js.map": "/reactjs-trade-csv-processor/static/js/runtime-main.2f26391c.js.map",
     "static/js/2.02258231.chunk.js": "/reactjs-trade-csv-processor/static/js/2.02258231.chunk.js",
@@ -18,6 +18,6 @@
     "static/js/runtime-main.2f26391c.js",
     "static/js/2.02258231.chunk.js",
     "static/css/main.8c8b27cf.chunk.css",
-    "static/js/main.c3130543.chunk.js"
+    "static/js/main.a2417de2.chunk.js"
   ]
 }
