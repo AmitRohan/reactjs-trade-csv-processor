@@ -1,5 +1,8 @@
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import React, { Component } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+
 import ReactApexChart from "react-apexcharts";
 
 
@@ -52,54 +55,100 @@ class CurrentCoinBalance extends Component {
 
   render(){
     return (
-      <Card sx={{ minWidth: 275 }}>
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {this.props.coinData.coinsOwned + " " + this.props.coinToken + " Owned"} 
-          </Typography>
-          <Typography gutterBottom variant="h6" component="div">
-            Price
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {this.props.coinPrice}
-          </Typography>
+      <div>
+        <Card sx={{ minWidth: 275 }}>
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {this.props.coinData.coinsOwned + " " + this.props.coinToken + " Owned"} 
+            </Typography>
+            <Typography gutterBottom variant="h6" component="div">
+              Price
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {this.props.coinPrice}
+            </Typography>
 
-          <Typography gutterBottom variant="h6" component="div">
-            Current Value
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {Math.abs(this.props.coinData.currentValue)}
-          </Typography>
+            <Typography gutterBottom variant="h6" component="div">
+              Current Value
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {Math.abs(this.props.coinData.currentValue)}
+            </Typography>
 
-          <Typography gutterBottom variant="h6" component="div">
-            Money Invested (Without fee)
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {Math.abs(this.props.coinData.moneyInvested)}
-          </Typography>
-
-
-          <Typography gutterBottom variant="h6" component="div">
-            Fees Paid
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-          {this.props.coinData.fee}
-          </Typography>
+            <Typography gutterBottom variant="h6" component="div">
+              Money Invested (Without fee)
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {Math.abs(this.props.coinData.moneyInvested)}
+            </Typography>
 
 
-          <Typography gutterBottom variant="h6" component="div">
-            Money Invested (With fee)
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {Math.abs(this.props.coinData.moneyInvestedWithFees)}
-          </Typography>
+            <Typography gutterBottom variant="h6" component="div">
+              Fees Paid
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+            {this.props.coinData.fee}
+            </Typography>
 
+
+            <Typography gutterBottom variant="h6" component="div">
+              Money Invested (With fee)
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {Math.abs(this.props.coinData.moneyInvestedWithFees)}
+            </Typography>
+          </CardContent>
+        </Card>
+        <Card sx={{ minWidth: 275 }}>
+          <CardContent>
           {
             this.getGraph()
           }
+          </CardContent>
+        </Card>
 
-        </CardContent>
-      </Card>
+        <Card sx={{ minWidth: 275 }}>
+          <CardContent>
+            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                {
+                  this.props.coinDataSet.map( transaction => {
+                    
+                    var secondaryComp = 
+                      (<React.Fragment>
+                        <Typography
+                          component="span"
+                          variant="body2"
+                          align="right"
+                          color="text.primary"
+                        >
+                          {transaction.Time}
+                        </Typography>
+                        
+                      </React.Fragment>)
+                    
+                    
+                    
+                    return(
+                      <ListItem key={transaction}>
+                        <ListItemIcon>
+                          {
+                            transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
+                          }
+                          
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={ transaction.Crypto_Amt + " " + transaction.SIDE + " for " + transaction.FIAT}
+                          secondary={secondaryComp}
+                        />
+                      </ListItem>
+                    )
+                  })
+                }
+              </List>
+          </CardContent>
+        </Card>
+
+      </div>
     );
   }
 }
