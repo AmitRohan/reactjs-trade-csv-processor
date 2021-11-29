@@ -1,6 +1,8 @@
 
 [DEMO](https://amitrohan.github.io/reactjs-trade-csv-processor/)
 
+This project helps you to get better details on your investments on BitBns by using their report and coin prices from coingecko using their API's
+
 [Material UI](https://mui.com/)
 
 # Getting Started with Create React App
