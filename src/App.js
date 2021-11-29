@@ -46,7 +46,7 @@ class App extends Component {
     super(props);
     this.state = emptyState
 
-    var cachedData = localStorage.getItem(LOCAL_DATA);
+    var cachedData = JSON.parse(localStorage.getItem(LOCAL_DATA));
     if(cachedData != null && Array.isArray(cachedData)){
       console.log("Data alrady cached")
 
@@ -61,7 +61,7 @@ class App extends Component {
 
   handleProcessedData = (fileData) => {
 
-    localStorage.setItem(LOCAL_DATA,fileData)
+    localStorage.setItem(LOCAL_DATA,JSON.stringify(fileData))
 
     this.setState({ fileUploaded: true, fileData});
           
