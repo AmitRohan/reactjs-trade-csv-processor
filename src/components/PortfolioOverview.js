@@ -4,6 +4,32 @@ import CoinOverview from './CoinOverview';
 
 class PortfolioOverview extends Component {
 
+  getCombinedPortfolio = () => {
+    var seedData = {
+      coinsOwned : 0,
+      currentValue : 0,
+      fee : 0,
+      moneyInvested : 0,
+      moneyInvestedWithFees : 0
+    };
+    var combinedData = this.props.allCoinData.reduce( (prevTransaction,currentTransaction) => {
+          var newRecord = Object.assign({},prevTransaction);
+          newRecord.currentValue += currentTransaction.currentValue;
+          newRecord.moneyInvested += currentTransaction.moneyInvested;
+          newRecord.moneyInvestedWithFees += currentTransaction.moneyInvestedWithFees;
+          newRecord.coinsOwned += currentTransaction.coinsOwned;
+          newRecord.fee += currentTransaction.fee;
+          return newRecord;
+      },seedData);
+    return (
+      <Grid item xs={12}>
+        <CoinOverview
+          coinIcon = { { large : "" } }
+          coinToken = { "OVER ALL" }
+          coinData = { combinedData }/>
+      </Grid>)
+  }
+
   getIndividualCards = () =>  {
     var allCoinData = this.props.allCoinData;
     return allCoinData.map( (coin, id) => {
@@ -20,11 +46,13 @@ class PortfolioOverview extends Component {
   render(){
     return (
       <Grid container spacing={2}>
-
+        {
+          this.getCombinedPortfolio()
+        }
         {
           this.getIndividualCards()
         }
-        </Grid>
+      </Grid>
     );
   }
 }
