@@ -12,7 +12,8 @@ const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
 //use ["ALL"] to support all coins
-const clientEndAllowedCoins = ["ALL"];
+const whiteListCoins = ["ALL"];
+const blackListCoins = ["SOUL"];
 const LOCAL_DATA = "XYZZYSPOON!"
 
 const defaultCoinObject = {
@@ -72,9 +73,20 @@ class App extends Component {
                         .getCoinDataFromReport(coinName)
                         .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
                         .coinsOwned > 0)
-                    ).filter( coin =>{
-                        return ( -1 !== clientEndAllowedCoins.indexOf("ALL") || -1 !== clientEndAllowedCoins.indexOf(coin) )
-                    })
+                    )
+
+    // REMOVE COINS NOT PRESENT IN WHITE LABEL
+    allSuportedCoins = allSuportedCoins.filter( coin =>{
+      return ( -1 !== whiteListCoins.indexOf("ALL") || -1 !== whiteListCoins.indexOf(coin) )
+    })
+    
+
+    // REMOVE COINS PRESENT IN BLACK LABEL
+    allSuportedCoins = allSuportedCoins.filter( coin =>{
+      return ( -1 !== blackListCoins.indexOf("ALL") || -1 === blackListCoins.indexOf(coin) )
+    })
+    
+                    
 
     this.setState( { allSuportedCoins })
     this.updateLatestCoinPricesFromCoinGecko();
@@ -136,6 +148,12 @@ class App extends Component {
   // Updates coin price at indes in state
   fetchCoinDataUsingId = (cb) => {
     var index = this.postProcessingCheckpointCounter
+
+    if(this.state.allCoinCoinGeckoId[index] === undefined){
+      cb();
+      return;
+    }
+
     CoinGeckoClient
       .coins
       .fetch(this.state.allCoinCoinGeckoId[index], {})
@@ -247,6 +265,7 @@ class App extends Component {
   // UI EVENTS
 
   resetAll = () => {
+    localStorage.setItem(LOCAL_DATA,null);
     this.setState(emptyState)
   }
 
