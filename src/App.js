@@ -2,64 +2,153 @@ import logo from './logo.svg';
 import './App.css';
 import ReactFileReader from 'react-file-reader';
 import React, { Component } from 'react';
+import PortfolioOverview from './components/PortfolioOverview';
+import PortfolioDetails from './components/PortfolioDetails';
+import { AppBar, Backdrop, Button, CircularProgress, IconButton, Toolbar, Typography } from '@mui/material';
+// import MenuIcon from '@mui/icons-material/Menu';
 const CSVPasrse = require('csv-parse');
 
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
+//use ["ALL"] to support all coins
+const clientEndAllowedCoins = ["ALL"];
+
+const defaultCoinObject = {
+  coinsOwned : 0,
+  currentValue : 0,
+  fee : 0,
+  moneyInvested : 0,
+  moneyInvestedWithFees : 0
+};
+
+const emptyState = {
+  fileUploaded: false,
+  showLoader : false,
+  postProcessingDone : false,
+  postProcessingCheckpoints : 0,
+  fileData : [],
+  allCoinData : [],
+  allCoinCoinGeckoId : [],
+  allCoinPrice : [],
+  allSuportedCoins : [],
+  selectedCoinData : defaultCoinObject,
+  selectedCoinHistoricPrice : [],
+  selectedCoinDataSet : [],
+  selectedCoinPrice : -1,
+  selectedCoinToken : ""
+}
 
 class App extends Component {
+  postProcessingCheckpointCounter = 0;
   constructor(props) {
     super(props);
-    this.state = {
-      resultObj: "Default Content",
-      apiKey: "",
-      apiSecretKey  : ""
-    }
+    this.state = emptyState
   }
   handleFiles = files => {
-    this.setState({ resultObj: ""});
+
+    // Set Checkpoint Size
+    this.postProcessingCheckpointCounter = 0;
+    var postProcessingCheckpoints = 999999;
+    this.setState({ postProcessingCheckpoints , postProcessingDone : false, showLoader : true});
+
     var reader = new FileReader();
     reader.onload = (e) => {
         // Use reader.result
-        CSVPasrse(reader.result, {columns: true, trim: true}, (err,jsonObj) => {
-          this.fetchLatestDataFromCoinGecko("ETH",jsonObj);
+        CSVPasrse(reader.result, {columns: true, trim: true}, (err,fileData) => {
+
+          this.setState({ fileUploaded: true, postProcessingCheckpoints : 0, fileData});
+          
+          var coinDataAnalyzer = this.getCoinDataAnalyzer(0);
+          var allSuportedCoins = this.getAllCoinsFromReport(fileData)
+                          .filter( coinName => 
+                            (this
+                              .getCoinDataFromReport(coinName)
+                              .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
+                              .coinsOwned > 0)
+                          ).filter( coin =>{
+                              return ( -1 !== clientEndAllowedCoins.indexOf("ALL") || -1 !== clientEndAllowedCoins.indexOf(coin) )
+                              // return ( -1 !== ["BTC","ETH"].indexOf(coin))
+                          })
+                          // Coins with Balane > 0
+                          
+          
+                  
+
+          
+          this.setState( { allSuportedCoins })
+          this.updateLatestCoinPricesFromCoinGecko();
+
         }) 
     }
     reader.readAsText(files[0]);
   }
 
-  getCoinDataFromReport = (key,report) => {
-    return report.filter( row => (row.Coin.toLowerCase() === key.toLowerCase()));
+  getCoinDataFromReport = (selectedCoinToken) => {
+    return this.state.fileData.filter( row => (row.Coin.toLowerCase() === selectedCoinToken.toLowerCase()));
   }
-  cryptoTradeProcessor = (coinName,inrPrice,fileData) => {
-    var coinData = this.getCoinDataFromReport(coinName,fileData);
-    var processedData = this.processDataList(coinData,inrPrice);
 
-    var output = "\n\n";
-    output += "\n======================================================================"; 
-    output += "\n\t" + coinName + " trade result"; 
-    output += "\n======================================================================"; 
-    output += "\n\nCoins Owned : " + processedData.coinBal + " " + coinName; 
-    output += "\nCurrent Value : " + Math.abs(processedData.value) + " INR";
-    output += "\n\nTotal Fees Paid : " + processedData.fee + " INR";
-    output += "\nMoney Invested (Without fee) : " + Math.abs(processedData.money) + " INR";
-    output += "\nMoney Invested (With fee) : " + Math.abs(processedData.fiat) + " INR";
-    output += "\n======================================================================";        
-    this.setState({ resultObj: output});
-
+  getAllCoinsFromReport = (report) => {
+    return [...new Set(report.map((row) => row.Coin))] 
   }
-  supportedCoins = [
-      "ETH",
-      "BTC",
-      "QKC",
-      "DOGE",
-      "SHIB",
-      "SAFEMOON",
-      "XRP"
-  ];
 
-  fetchLatestDataFromCoinGecko = (coinName,jsonObj) => {
+  getCoinDataAnalyzer = (coinPrice) => {
+      return (prevTransaction,currentTransaction) => {
+        var newRecord = Object.assign({},prevTransaction);
+        
+        if(currentTransaction.SIDE==='BUY'){
+          newRecord.coinsOwned += parseFloat(currentTransaction.Crypto_Amt)
+          newRecord.moneyInvested -= ((parseFloat(currentTransaction.Crypto_Amt)) * (parseFloat(currentTransaction.Rate)))
+          newRecord.moneyInvestedWithFees -= parseFloat(currentTransaction.FIAT)
+        }else{
+          newRecord.coinsOwned -= parseFloat(currentTransaction.Crypto_Amt)
+          newRecord.moneyInvested += ((parseFloat(currentTransaction.Crypto_Amt)) * (parseFloat(currentTransaction.Rate)))
+          newRecord.moneyInvestedWithFees += parseFloat(currentTransaction.FIAT)
+        }
+        
+        newRecord.fee += parseFloat(currentTransaction.Fee)
+        newRecord.currentValue = (newRecord.coinsOwned * coinPrice)
+
+        if(newRecord.currentValue !== 0)
+          newRecord.currentValue -= newRecord.fee
+    
+        return newRecord  
+      }
+  }
+  
+  postProcessingCheckpoints = 0;
+  
+  // var coinSymbol = coinResp.symbol.toLowerCase();
+
+  // Updates coin price at indes in state
+  fetchCoinDataUsingId = (cb) => {
+    var index = this.postProcessingCheckpointCounter
+    CoinGeckoClient
+      .coins
+      .fetch(this.state.allCoinCoinGeckoId[index], {})
+      .then(coinDataReponse => {
+          const coinPrice = coinDataReponse.data.market_data.current_price.inr
+          var allCoinPrice = this.state.allCoinPrice;
+          allCoinPrice[index] = coinPrice
+          this.setState({ allCoinPrice })     
+
+          var coinDataSet = this.getCoinDataFromReport(this.state.allSuportedCoins[index]);
+          var defaultResp = Object.assign({},defaultCoinObject);
+          var coinData = coinDataSet.reduce(this.getCoinDataAnalyzer(coinPrice),defaultResp);
+          
+          var allCoinData = this.state.allCoinData;
+          allCoinData[index] = coinData
+          this.setState({ allCoinData })
+
+
+          cb();
+      }).catch(err => {
+        console.log(err)
+        cb();
+      });
+  }
+
+  updateLatestCoinPricesFromCoinGecko = () => {
     CoinGeckoClient
         .coins
         .list()
@@ -67,117 +156,157 @@ class App extends Component {
             if(resp.code !== 200){
                 return;
             }
-            resp.data.map( coinResp => {
-                if(coinResp.symbol === coinName.toLowerCase()){
+            var suportedResponse = resp.data.filter( coinResp => {
+              return (-1 !== this.state.allSuportedCoins.indexOf(coinResp.symbol.toUpperCase()))
+            });
+            // Set Checkpoint Size
+            this.postProcessingCheckpointCounter = 0;
+            var postProcessingCheckpoints = suportedResponse.length;
+            this.setState({ postProcessingCheckpoints });
+            
+            var allCoinCoinGeckoId = this.state.allCoinCoinGeckoId;
+            suportedResponse.forEach( coinResp => {
+                var coinSymbol = coinResp.symbol.toLowerCase();
+                var indexInSuportedCoins = this.state.allSuportedCoins.indexOf(coinSymbol.toUpperCase())
+                allCoinCoinGeckoId[indexInSuportedCoins] = coinResp.id
+            })
+            this.setState({ allCoinCoinGeckoId });
+            var toRepeat = () => {
+              if(postProcessingCheckpoints <= this.postProcessingCheckpointCounter
+                  && !this.state.postProcessingDone){
+                this.setState({ postProcessingDone : true, showLoader : false})
+                return;
+              }
+              this.fetchCoinDataUsingId(() => { 
+                this.postProcessingCheckpointCounter++;
+                toRepeat();
+              })
+            }
+            toRepeat();
+
+
+    })
+  }
+
+  fetchSelectedCoinIdFromCoinGecko = () => {
+    CoinGeckoClient
+        .coins
+        .list()
+        .then(resp => {
+            if(resp.code !== 200){
+                return;
+            }
+            resp.data.forEach( coinResp => {
+                var coinSymbol = coinResp.symbol.toLowerCase();
+                if(coinSymbol === this.state.selectedCoinToken.toLowerCase()){
                     
                     // Get Data
-                    console.log("Fetching Latest Coin Data");
-                    CoinGeckoClient.coins.fetch(coinResp.id, {})
-                        .then(coinDataReponse => {
-                            console.log("Latest Coin Data Fetched");
-                            const inrPrice = coinDataReponse.data.market_data.current_price.inr
-                            
-							console.log("Fetching Historic Prices");
-							CoinGeckoClient.coins.fetchMarketChart(coinResp.id, {days : 91, vs_currency : 'inr' , interval : 'daily '})
-                                .then(coinMarketChartData => {
-                                    console.log("Historic Prices Fetched");
-                                    const historicPrices = coinMarketChartData
-                                                                .data
-                                                                .prices
-                                                                .filter((x,i)=> i > 61) // save last 5 entry as interval field is not supported yet
-                                                                .map(x => { return Math.round(x[1]*10)/10}); // get abs value of price, 2nd param, 1st is timestamp
-                                    
-                                    var charOutputs = `\n ${coinResp.symbol} Day Wise Chart\t Current Price ${inrPrice} INR`;
-                                    charOutputs += "\n======================================"; 
-                                    charOutputs += "\n======================================"; 
-                                    console.log(charOutputs)
-                                    
-
-                                    console.log("Processing Report");
-                                    this.cryptoTradeProcessor(coinResp.symbol,inrPrice,jsonObj)
-
-                                });
-
-                                
-                        });
+                    this.fetchCoinPrice(coinResp.id)
+                    this.fetchHistoricPrices(coinResp.id)
             }
         })
-    })
-  }
-  processDataList = (dataset,inrPrice) => {
-    return dataset.reduce((prev,current,curretIndex) => {
-        var _new = prev;
-        if(current.SIDE==='BUY'){
-            _new.coinBal += parseFloat(current.Crypto_Amt)
-            _new.money -= ((parseFloat(current.Crypto_Amt)*100000000) * (parseFloat(current.Rate)*100000000))
-      _new.money /= 10000000000000000
-            _new.fiat -= parseFloat(current.FIAT)
-        }else{
-            _new.coinBal -= parseFloat(current.Crypto_Amt)
-            _new.money += ((parseFloat(current.Crypto_Amt)*100000000) * (parseFloat(current.Rate)*100000000))
-      _new.money /= 10000000000000000
-            _new.fiat += parseFloat(current.FIAT)
-        }
-        
-        _new.fee += parseFloat(current.Fee)
-        _new.value = (_new.coinBal * inrPrice)
-        if(_new.value !== 0)
-            _new.value -= _new.fee
-
-        return _new  
-    },{
-        fee : 0,
-        coinBal : 0,
-        money : 0,
-        fiat : 0,
-        value : 0,
-    })
+    }).catch(err => console.log(err));
   }
 
+  fetchCoinPrice = (coinId) => {
+    CoinGeckoClient
+      .coins
+      .fetch(coinId, {})
+      .then(coinDataReponse => {
+          // const selectedCoinPrice = 1
+          const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
+          this.updateSelectedCoinInState(selectedCoinPrice);
+      }).catch(err => console.log(err));
+  }
+
+  fetchHistoricPrices = (coinId) => {
+    CoinGeckoClient
+      .coins
+      .fetchMarketChart(coinId, {days : 91, vs_currency : 'inr' , interval : 'daily '})
+      .then(coinMarketChartData => {
+          const selectedCoinHistoricPrice = coinMarketChartData
+                                              .data
+                                              .prices
+        this.setState( { selectedCoinHistoricPrice });
+      }).catch(err => console.log(err));
+  }
 
   // UI EVENTS
 
-  handleApiKey = (evt) => {
-    this.setState({
-      apiKey: evt.target.value
-    });
+  resetAll = () => {
+    this.setState(emptyState)
   }
 
-  handleApiSecretKey = (evt) => {
-    this.setState({
-      apiSecretKey: evt.target.value
-    });
+  updateSelectedCoinInState = (selectedCoinPrice) => {
+    var selectedCoinName = this.state.selectedCoinToken;
+    var selectedCoinDataSet = this.getCoinDataFromReport(selectedCoinName);
+    var defaultResp = Object.assign({},defaultCoinObject);
+    var selectedCoinData = selectedCoinDataSet.reduce(this.getCoinDataAnalyzer(selectedCoinPrice),defaultResp);
+    
+    this.setState({selectedCoinPrice , selectedCoinDataSet , selectedCoinData })
+
   }
 
-  onFetchDataButtonClick = (evt) => {
-    console.log(this.state.apiKey,this.state.apiSecretKey);
+  handleNewTokenSelection = (selectedCoinToken) => {
+    this.setState( { selectedCoinToken })
+    this.fetchSelectedCoinIdFromCoinGecko();
   }
 
   render(){
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <a
-            className="App-link"
-            href="https://www.linkedin.com/in/amit-rohan-250727a3/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-          <div> Result </div>
-          <div> { this.state.resultObj }</div>
-            Follow on linkedin
-          </a>
-          <label>Api Key:</label>
-          <input type="text" value={this.state.apiKey} onChange={this.handleApiKey}></input>
-          <label>Api Secret Key:</label>
-          <input type="text" value={this.state.apiSecretKey} onChange={this.handleApiSecretKey}></input>
-          <button className='btn' onClick={this.onFetchDataButtonClick}>FEtCH</button>
+           <AppBar position="static">
+            <Toolbar>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ mr: 2 }}
+              >
+                {/* <MenuIcon /> */}
+              </IconButton>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                { this.state.postProcessingDone ? "Detail" : "Upload your file"}
+              </Typography>
+                { this.state.postProcessingDone ? 
+                    <Button onClick={this.resetAll} color="inherit">Reset</Button>
+                    : <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
+                          <Button color="inherit" >Upload</Button>
+                      </ReactFileReader>
+                }
 
-          <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
-              <button className='btn'>Upload</button>
-          </ReactFileReader>
-        </header>
+              
+            </Toolbar>
+          </AppBar>
+          {
+            !this.state.postProcessingDone
+              ? <header className="App-header"> 
+                  {/* <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" /> */}
+                  <label>In Deapth Analysis of Trade Report</label>
+                </header> 
+              : 
+              <div>
+                <PortfolioOverview
+                  allCoinData = {this.state.allCoinData}
+                  allCoins = {this.state.allSuportedCoins}
+                />
+                <PortfolioDetails
+                  selectedCoinToken = { this.state.selectedCoinToken }
+                  selectedCoinPrice = { this.state.selectedCoinPrice}
+                  selectedCoinData = { this.state.selectedCoinData}
+                  selectedCoinHistoricPrice = { this.state.selectedCoinHistoricPrice }
+                  updateSelectedToken = {this.handleNewTokenSelection}
+                  allSuportedCoins = {this.state.allSuportedCoins} />
+              </div>
+              
+          }
+          <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={this.state.showLoader}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
       </div>
     );
   }
