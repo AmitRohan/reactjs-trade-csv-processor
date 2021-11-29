@@ -12,7 +12,9 @@ const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
 //use ["ALL"] to support all coins
-const clientEndAllowedCoins = ["ALL"];
+const whiteListCoins = ["ALL"];
+const blackListCoins = ["SOUL"];
+const LOCAL_DATA = "XYZZYSPOON!"
 
 const defaultCoinObject = {
   coinsOwned : 0,
@@ -44,7 +46,52 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = emptyState
+
+    var cachedData = JSON.parse(localStorage.getItem(LOCAL_DATA));
+    if(cachedData != null && Array.isArray(cachedData)){
+      console.log("Data alrady cached")
+
+      this.postProcessingCheckpointCounter = 0;
+      var postProcessingCheckpoints = 999999;
+      this.setState({ postProcessingCheckpoints , postProcessingDone : false, showLoader : true});
+
+      this.handleProcessedData(cachedData)
+    }
   }
+
+
+  handleProcessedData = (fileData) => {
+
+    localStorage.setItem(LOCAL_DATA,JSON.stringify(fileData))
+
+    this.setState({ fileUploaded: true, fileData});
+          
+    var coinDataAnalyzer = this.getCoinDataAnalyzer(0);
+    var allSuportedCoins = this.getAllCoinsFromReport(fileData)
+                    .filter( coinName => 
+                      (this
+                        .getCoinDataFromReport(coinName)
+                        .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
+                        .coinsOwned > 0)
+                    )
+
+    // REMOVE COINS NOT PRESENT IN WHITE LABEL
+    allSuportedCoins = allSuportedCoins.filter( coin =>{
+      return ( -1 !== whiteListCoins.indexOf("ALL") || -1 !== whiteListCoins.indexOf(coin) )
+    })
+    
+
+    // REMOVE COINS PRESENT IN BLACK LABEL
+    allSuportedCoins = allSuportedCoins.filter( coin =>{
+      return ( -1 !== blackListCoins.indexOf("ALL") || -1 === blackListCoins.indexOf(coin) )
+    })
+    
+                    
+
+    this.setState( { allSuportedCoins })
+    this.updateLatestCoinPricesFromCoinGecko();
+  }
+
   handleFiles = files => {
 
     // Set Checkpoint Size
@@ -56,29 +103,7 @@ class App extends Component {
     reader.onload = (e) => {
         // Use reader.result
         CSVPasrse(reader.result, {columns: true, trim: true}, (err,fileData) => {
-
-          this.setState({ fileUploaded: true, postProcessingCheckpoints : 0, fileData});
-          
-          var coinDataAnalyzer = this.getCoinDataAnalyzer(0);
-          var allSuportedCoins = this.getAllCoinsFromReport(fileData)
-                          .filter( coinName => 
-                            (this
-                              .getCoinDataFromReport(coinName)
-                              .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
-                              .coinsOwned > 0)
-                          ).filter( coin =>{
-                              return ( -1 !== clientEndAllowedCoins.indexOf("ALL") || -1 !== clientEndAllowedCoins.indexOf(coin) )
-                              // return ( -1 !== ["BTC","ETH"].indexOf(coin))
-                          })
-                          // Coins with Balane > 0
-                          
-          
-                  
-
-          
-          this.setState( { allSuportedCoins })
-          this.updateLatestCoinPricesFromCoinGecko();
-
+          this.handleProcessedData(fileData);
         }) 
     }
     reader.readAsText(files[0]);
@@ -123,6 +148,12 @@ class App extends Component {
   // Updates coin price at indes in state
   fetchCoinDataUsingId = (cb) => {
     var index = this.postProcessingCheckpointCounter
+
+    if(this.state.allCoinCoinGeckoId[index] === undefined){
+      cb();
+      return;
+    }
+
     CoinGeckoClient
       .coins
       .fetch(this.state.allCoinCoinGeckoId[index], {})
@@ -185,7 +216,7 @@ class App extends Component {
             toRepeat();
 
 
-    })
+    }).catch(console.log);
   }
 
   fetchSelectedCoinIdFromCoinGecko = () => {
@@ -205,7 +236,7 @@ class App extends Component {
                     this.fetchHistoricPrices(coinResp.id)
             }
         })
-    }).catch(err => console.log(err));
+    }).catch(console.log);
   }
 
   fetchCoinPrice = (coinId) => {
@@ -216,7 +247,7 @@ class App extends Component {
           // const selectedCoinPrice = 1
           const selectedCoinPrice = coinDataReponse.data.market_data.current_price.inr
           this.updateSelectedCoinInState(selectedCoinPrice);
-      }).catch(err => console.log(err));
+      }).catch(console.log);
   }
 
   fetchHistoricPrices = (coinId) => {
@@ -228,12 +259,13 @@ class App extends Component {
                                               .data
                                               .prices
         this.setState( { selectedCoinHistoricPrice });
-      }).catch(err => console.log(err));
+      }).catch(console.log);
   }
 
   // UI EVENTS
 
   resetAll = () => {
+    localStorage.setItem(LOCAL_DATA,null);
     this.setState(emptyState)
   }
 
