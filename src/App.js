@@ -49,14 +49,18 @@ class App extends Component {
 
     var cachedData = JSON.parse(localStorage.getItem(LOCAL_DATA));
     if(cachedData != null && Array.isArray(cachedData)){
-      console.log("Data alrady cached")
+      console.log("Data alrady cached",cachedData)
 
-      this.postProcessingCheckpointCounter = 0;
-      var postProcessingCheckpoints = 999999;
-      this.setState({ postProcessingCheckpoints , postProcessingDone : false, showLoader : true});
-
+      this.initialProcessingChecks();
       this.handleProcessedData(cachedData)
+      
     }
+  }
+
+  initialProcessingChecks = () => {
+    this.postProcessingCheckpointCounter = 0;
+    var postProcessingCheckpoints = 999999;
+    this.setState({ postProcessingCheckpoints , postProcessingDone : false, showLoader : true});
   }
 
 
@@ -74,19 +78,16 @@ class App extends Component {
                         .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
                         .coinsOwned > 0)
                     )
-
+    
     // REMOVE COINS NOT PRESENT IN WHITE LABEL
     allSuportedCoins = allSuportedCoins.filter( coin =>{
       return ( -1 !== whiteListCoins.indexOf("ALL") || -1 !== whiteListCoins.indexOf(coin) )
     })
-    
 
     // REMOVE COINS PRESENT IN BLACK LABEL
     allSuportedCoins = allSuportedCoins.filter( coin =>{
       return ( -1 !== blackListCoins.indexOf("ALL") || -1 === blackListCoins.indexOf(coin) )
     })
-    
-                    
 
     this.setState( { allSuportedCoins })
     this.updateLatestCoinPricesFromCoinGecko();
@@ -94,10 +95,7 @@ class App extends Component {
 
   handleFiles = files => {
 
-    // Set Checkpoint Size
-    this.postProcessingCheckpointCounter = 0;
-    var postProcessingCheckpoints = 999999;
-    this.setState({ postProcessingCheckpoints , postProcessingDone : false, showLoader : true});
+    this.initialProcessingChecks()
 
     var reader = new FileReader();
     reader.onload = (e) => {
