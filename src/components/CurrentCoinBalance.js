@@ -1,4 +1,4 @@
-import { Card, CardContent, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Card, CardContent, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import React, { Component } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -157,11 +157,27 @@ class CurrentCoinBalance extends Component {
 
   render(){
     return (
-      <div>
-          { this.getOverViewCard() }
-          { this.getHistoricGraphCard() }
-          { this.getTransactionListCard() }
-      </div>
+      <Grid container spacing={2}>
+          <Grid item xs={8}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                {
+                  this.getOverViewCard()
+                }
+              </Grid>
+              <Grid item xs={12}>
+                {
+                  this.getHistoricGraphCard()
+                }
+              </Grid>
+            </Grid>
+          </Grid>          
+          <Grid item xs={4}>
+              {
+                this.getTransactionListCard()
+              }
+          </Grid>
+        </Grid>
     );
   }
 }
