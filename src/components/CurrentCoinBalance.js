@@ -1,8 +1,5 @@
-import { Card, CardContent, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Avatar, Card, CardContent, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import React, { Component } from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-
 import ReactApexChart from "react-apexcharts";
 
 
@@ -117,7 +114,7 @@ class CurrentCoinBalance extends Component {
       <CardContent>
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
             {
-              this.props.coinDataSet.map( transaction => {
+              this.props.coinDataSet.map( (transaction, pos) => {
                 
                 var secondaryComp = 
                   (<React.Fragment>
@@ -135,11 +132,14 @@ class CurrentCoinBalance extends Component {
                 
                 
                 return(
-                  <ListItem key={transaction}>
+                  <ListItem key={pos + "transaction"}>
                     <ListItemIcon>
-                      {
+                      {/* {
                         transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
-                      }
+                      } */}
+
+                      <Avatar alt="Remy Sharp" src={this.props.coinIcon.large} />
+
                       
                     </ListItemIcon>
                     <ListItemText
