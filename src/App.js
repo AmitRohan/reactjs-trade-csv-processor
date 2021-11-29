@@ -45,6 +45,26 @@ class App extends Component {
     super(props);
     this.state = emptyState
   }
+
+
+  handleProcessedData = (fileData) => {
+    this.setState({ fileUploaded: true, postProcessingCheckpoints : 0, fileData});
+          
+    var coinDataAnalyzer = this.getCoinDataAnalyzer(0);
+    var allSuportedCoins = this.getAllCoinsFromReport(fileData)
+                    .filter( coinName => 
+                      (this
+                        .getCoinDataFromReport(coinName)
+                        .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
+                        .coinsOwned > 0)
+                    ).filter( coin =>{
+                        return ( -1 !== clientEndAllowedCoins.indexOf("ALL") || -1 !== clientEndAllowedCoins.indexOf(coin) )
+                    })
+
+    this.setState( { allSuportedCoins })
+    this.updateLatestCoinPricesFromCoinGecko();
+  }
+
   handleFiles = files => {
 
     // Set Checkpoint Size
@@ -56,29 +76,7 @@ class App extends Component {
     reader.onload = (e) => {
         // Use reader.result
         CSVPasrse(reader.result, {columns: true, trim: true}, (err,fileData) => {
-
-          this.setState({ fileUploaded: true, postProcessingCheckpoints : 0, fileData});
-          
-          var coinDataAnalyzer = this.getCoinDataAnalyzer(0);
-          var allSuportedCoins = this.getAllCoinsFromReport(fileData)
-                          .filter( coinName => 
-                            (this
-                              .getCoinDataFromReport(coinName)
-                              .reduce(coinDataAnalyzer,Object.assign({},defaultCoinObject))
-                              .coinsOwned > 0)
-                          ).filter( coin =>{
-                              return ( -1 !== clientEndAllowedCoins.indexOf("ALL") || -1 !== clientEndAllowedCoins.indexOf(coin) )
-                              // return ( -1 !== ["BTC","ETH"].indexOf(coin))
-                          })
-                          // Coins with Balane > 0
-                          
-          
-                  
-
-          
-          this.setState( { allSuportedCoins })
-          this.updateLatestCoinPricesFromCoinGecko();
-
+          this.handleProcessedData(fileData);
         }) 
     }
     reader.readAsText(files[0]);
