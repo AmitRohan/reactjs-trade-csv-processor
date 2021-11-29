@@ -39,6 +39,54 @@ const chartConfig = {
 };
 
 class CurrentCoinBalance extends Component {
+
+  getOverViewCard = () => {
+    return(
+      <Card sx={{ minWidth: 275 }}>
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {this.props.coinData.coinsOwned + " " + this.props.coinToken + " Owned"} 
+        </Typography>
+        <Typography gutterBottom variant="h6" component="div">
+          Price
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {this.props.coinPrice}
+        </Typography>
+
+        <Typography gutterBottom variant="h6" component="div">
+          Current Value
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {Math.abs(this.props.coinData.currentValue)}
+        </Typography>
+
+        <Typography gutterBottom variant="h6" component="div">
+          Money Invested (Without fee)
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {Math.abs(this.props.coinData.moneyInvested)}
+        </Typography>
+
+
+        <Typography gutterBottom variant="h6" component="div">
+          Fees Paid
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+        {this.props.coinData.fee}
+        </Typography>
+
+
+        <Typography gutterBottom variant="h6" component="div">
+          Money Invested (With fee)
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {Math.abs(this.props.coinData.moneyInvestedWithFees)}
+        </Typography>
+      </CardContent>
+    </Card>
+    )
+  }
   
   getGraph = () => {
     const coinHistoricPrice = this.props.coinHistoricPrice || []
@@ -53,101 +101,66 @@ class CurrentCoinBalance extends Component {
     )
   }
 
+  getHistoricGraphCard = () => {
+    return (
+      <Card sx={{ minWidth: 275 }}>
+        <CardContent>
+        {
+          this.getGraph()
+        }
+        </CardContent>
+      </Card>)
+  }
+
+  getTransactionListCard = () => {
+    return (<Card sx={{ minWidth: 275 }}>
+      <CardContent>
+        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            {
+              this.props.coinDataSet.map( transaction => {
+                
+                var secondaryComp = 
+                  (<React.Fragment>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      align="right"
+                      color="text.primary"
+                    >
+                      {transaction.Time}
+                    </Typography>
+                    
+                  </React.Fragment>)
+                
+                
+                
+                return(
+                  <ListItem key={transaction}>
+                    <ListItemIcon>
+                      {
+                        transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
+                      }
+                      
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={ transaction.Crypto_Amt + " " + transaction.SIDE + " for " + transaction.FIAT}
+                      secondary={secondaryComp}
+                    />
+                  </ListItem>
+                )
+              })
+            }
+          </List>
+      </CardContent>
+    </Card>)
+  }
+
   render(){
     return (
       <div>
-        <Card sx={{ minWidth: 275 }}>
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              {this.props.coinData.coinsOwned + " " + this.props.coinToken + " Owned"} 
-            </Typography>
-            <Typography gutterBottom variant="h6" component="div">
-              Price
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {this.props.coinPrice}
-            </Typography>
-
-            <Typography gutterBottom variant="h6" component="div">
-              Current Value
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {Math.abs(this.props.coinData.currentValue)}
-            </Typography>
-
-            <Typography gutterBottom variant="h6" component="div">
-              Money Invested (Without fee)
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {Math.abs(this.props.coinData.moneyInvested)}
-            </Typography>
-
-
-            <Typography gutterBottom variant="h6" component="div">
-              Fees Paid
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-            {this.props.coinData.fee}
-            </Typography>
-
-
-            <Typography gutterBottom variant="h6" component="div">
-              Money Invested (With fee)
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {Math.abs(this.props.coinData.moneyInvestedWithFees)}
-            </Typography>
-          </CardContent>
-        </Card>
-        <Card sx={{ minWidth: 275 }}>
-          <CardContent>
-          {
-            this.getGraph()
-          }
-          </CardContent>
-        </Card>
-
-        <Card sx={{ minWidth: 275 }}>
-          <CardContent>
-            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                {
-                  this.props.coinDataSet.map( transaction => {
-                    
-                    var secondaryComp = 
-                      (<React.Fragment>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          align="right"
-                          color="text.primary"
-                        >
-                          {transaction.Time}
-                        </Typography>
-                        
-                      </React.Fragment>)
-                    
-                    
-                    
-                    return(
-                      <ListItem key={transaction}>
-                        <ListItemIcon>
-                          {
-                            transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
-                          }
-                          
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={ transaction.Crypto_Amt + " " + transaction.SIDE + " for " + transaction.FIAT}
-                          secondary={secondaryComp}
-                        />
-                      </ListItem>
-                    )
-                  })
-                }
-              </List>
-          </CardContent>
-        </Card>
-
+          { this.getOverViewCard() }
+          { this.getHistoricGraphCard() }
+          { this.getTransactionListCard() }
       </div>
     );
   }
