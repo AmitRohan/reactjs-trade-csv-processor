@@ -327,6 +327,7 @@ class App extends Component {
                   selectedCoinToken = { this.state.selectedCoinToken }
                   selectedCoinPrice = { this.state.selectedCoinPrice}
                   selectedCoinData = { this.state.selectedCoinData}
+                  selectedCoinDataSet = { this.state.selectedCoinDataSet}
                   selectedCoinHistoricPrice = { this.state.selectedCoinHistoricPrice }
                   updateSelectedToken = {this.handleNewTokenSelection}
                   allSuportedCoins = {this.state.allSuportedCoins} />

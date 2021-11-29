@@ -62,6 +62,7 @@ class PortfolioDetails extends Component {
                   coinToken = {this.props.selectedCoinToken}
                   coinPrice = {this.props.selectedCoinPrice}
                   coinData = {this.props.selectedCoinData}
+                  coinDataSet = {this.props.selectedCoinDataSet}
                   coinHistoricPrice = {this.props.selectedCoinHistoricPrice}
                 />)
         }
