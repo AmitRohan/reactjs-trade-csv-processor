@@ -162,7 +162,7 @@ class CurrentCoinBalance extends Component {
 
   render(){
     return (
-      <Grid container spacing={2} sx={{ padding: '12px'}}>
+      <Grid container spacing={2} sx={{ padding: '12px' , paddintTop : '0px'}}>
           <Grid item xs={8}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
