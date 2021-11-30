@@ -29,19 +29,6 @@ class PortfolioOverview extends Component {
           coinData = { combinedData }/>
       </Grid>)
   }
-
-  getIndividualCards = () =>  {
-    var allCoinData = this.props.allCoinData;
-    return allCoinData.map( (coin, id) => {
-      return (
-        <Grid item xs={3} key= {id}>
-            <CoinOverview
-              coinIcon = { this.props.allCoinIcon[id]}
-              coinToken = { this.props.allCoins[id]}
-              coinData = { coin }/>
-        </Grid>)
-    });
-  }
   
   render(){
     return (
@@ -51,9 +38,6 @@ class PortfolioOverview extends Component {
           this.getCombinedPortfolio()
         }
         <Grid item lg={4} sm={3} xs={0}/>
-        {
-          this.getIndividualCards()
-        }
       </Grid>
     );
   }
