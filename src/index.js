@@ -4,17 +4,31 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// Start listening to the process
-var warningCheck =  (warning) => {
-  
-  // If there is a warning then print
-  // it and stop the process
-  if (warning) {
-      console.log(warning);
-  }
-};
+// Boiler Plate for Using custom styles for Badge below icon
+import { styled } from '@mui/material/styles';
+import Badge from '@mui/material/Badge';
 
-process.emitWarning = warningCheck;
+const boilerPlateCode = () => {
+  
+
+  const StyledBadge = styled(Badge)(({ theme }) => ({ }));
+
+
+  // Start listening to the process
+  var warningCheck =  (warning) => {
+    
+    // If there is a warning then print
+    // it and stop the process
+    if (warning) {
+        console.log(warning);
+    }
+  };
+
+  process.emitWarning = warningCheck;
+}
+
+
+boilerPlateCode();
 
 ReactDOM.render(
   <React.StrictMode>
