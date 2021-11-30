@@ -676,6 +676,7 @@ class App extends Component {
                   selectedCoinDataSet = { this.state.selectedCoinDataSet}
                   selectedCoinHistoricPrice = { this.state.selectedCoinHistoricPrice }
                   updateSelectedToken = {this.handleNewTokenSelection}
+                  allCoinData = {this.state.allCoinData}
                   allCoinIcon = {this.state.allCoinIcon}
                   allSuportedCoins = {this.state.allSuportedCoins} />
               </div>
