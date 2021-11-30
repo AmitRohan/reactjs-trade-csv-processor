@@ -4,15 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// Boiler Plate for Using custom styles for Badge below icon
-import { styled } from '@mui/material/styles';
-import Badge from '@mui/material/Badge';
 
 const boilerPlateCode = () => {
-  
-
-  const StyledBadge = styled(Badge)(({ theme }) => ({ }));
-
 
   // Start listening to the process
   var warningCheck =  (warning) => {
