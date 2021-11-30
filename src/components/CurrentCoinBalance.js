@@ -1,4 +1,4 @@
-import { Avatar, Card, CardContent, Divider, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Avatar, Card, CardContent, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import React, { Component } from 'react';
 import ReactApexChart from "react-apexcharts";
 

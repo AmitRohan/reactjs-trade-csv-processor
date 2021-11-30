@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import ReactFileReader from 'react-file-reader';
 import React, { Component } from 'react';
