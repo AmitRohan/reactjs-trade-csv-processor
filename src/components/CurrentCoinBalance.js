@@ -110,9 +110,13 @@ class CurrentCoinBalance extends Component {
   }
 
   getTransactionListCard = () => {
+
+    var borderProps = { borderBottom: 1 , borderColor : 'divider'};
+    var lastBorderProps = { };
+
     return (<Card sx={{ minWidth: 275 }}>
       <CardContent>
-        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
             {
               this.props.coinDataSet.map( (transaction, pos) => {
                 
@@ -129,23 +133,24 @@ class CurrentCoinBalance extends Component {
                     
                   </React.Fragment>)
                 
-                
-                
                 return(
-                  <ListItem key={pos + "transaction"}>
-                    <ListItemIcon>
-                      {/* {
-                        transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
-                      } */}
+                  <ListItem key={pos + "transaction"} sx={ pos + 1 === this.props.coinDataSet.length ? lastBorderProps : borderProps}>
+                  
+                      <ListItemIcon>
+                        {/* {
+                          transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
+                        } */}
 
-                      <Avatar alt="Remy Sharp" src={this.props.coinIcon.large} />
+                        <Avatar alt="Remy Sharp" src={this.props.coinIcon.large} />
 
-                      
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={ transaction.Crypto_Amt + " " + transaction.Desc + " for " + transaction.FIAT}
-                      secondary={secondaryComp}
-                    />
+                        
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={ transaction.Crypto_Amt + " " + transaction.Desc + " for " + transaction.FIAT}
+                        secondary={secondaryComp}
+                      />
+                    
+
                   </ListItem>
                 )
               })
@@ -157,7 +162,7 @@ class CurrentCoinBalance extends Component {
 
   render(){
     return (
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ padding: '12px' , paddintTop : '0px'}}>
           <Grid item xs={8}>
             <Grid container spacing={2}>
               <Grid item xs={12}>

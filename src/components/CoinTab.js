@@ -1,7 +1,10 @@
-import { Avatar, Card, CardContent, Typography } from '@mui/material';
+import { Avatar, Typography } from '@mui/material';
 import React, { Component } from 'react';
+
 import { styled } from '@mui/material/styles';
 import Badge from '@mui/material/Badge';
+import { Box } from '@mui/system';
+
 
 const GreenStyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -20,24 +23,27 @@ const GreenStyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 
+
 const RedStyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    backgroundColor: '#b74400',
-    color: '#b74400',
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    '&::after': {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      content: '""',
-    },
-  }
+'& .MuiBadge-badge': {
+  backgroundColor: '#b74400',
+  color: '#b74400',
+  boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+  '&::after': {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    content: '""',
+  },
+}
 }));
 
 
-class CoinOverview extends Component {
+
+
+class CoinTab extends Component {
   
   getProfit = () =>  {
     var profit = this.props.coinData.currentValue/this.props.coinData.moneyInvested
@@ -52,10 +58,11 @@ class CoinOverview extends Component {
   }
   
   render(){
+    var avatar = <Avatar alt="" src={this.props.coinIcon.large} sx={{ width: 24, height: 24 }} />;
     return (
 
-      <Card sx={{ minWidth: 275 }}>
-        <CardContent>
+      
+        <Box>
 
           { this.getProfit() > 0
             ?  <GreenStyledBadge
@@ -63,26 +70,26 @@ class CoinOverview extends Component {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 variant="dot"
               >
-                <Avatar alt="Remy Sharp" src={this.props.coinIcon.large} /> 
+                { avatar}
               </GreenStyledBadge>
             : <RedStyledBadge
                 overlap="circular"
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 variant="dot"
               >
-                <Avatar alt="Remy Sharp" src={this.props.coinIcon.large} /> 
+                { avatar}
               </RedStyledBadge>
           }
-          <Typography gutterBottom variant="h5" component="div">
+          <Typography gutterBottom component="div">
             {this.props.coinToken } { this.getProfit() + "%" }
           </Typography>
-          <Typography gutterBottom variant="h6" component="div">
+          <Typography gutterBottom  component="div">
             {Math.abs(this.props.coinData.currentValue)} INR
           </Typography>
-        </CardContent>
-      </Card>
+        </Box>
+      
     );
   }
 }
 
-export default CoinOverview;
+export default CoinTab;

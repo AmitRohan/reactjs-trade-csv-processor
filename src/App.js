@@ -1,10 +1,9 @@
-import logo from './logo.svg';
 import './App.css';
 import ReactFileReader from 'react-file-reader';
 import React, { Component } from 'react';
-import PortfolioOverview from './components/PortfolioOverview';
 import PortfolioDetails from './components/PortfolioDetails';
 import { AppBar, Backdrop, Button, CircularProgress, IconButton, Toolbar, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 // import MenuIcon from '@mui/icons-material/Menu';
 const CSVPasrse = require('csv-parse');
 
@@ -15,6 +14,8 @@ const CoinGeckoClient = new CoinGecko();
 const whiteListCoins = ["ALL"];
 const blackListCoins = ["SOUL"];
 const LOCAL_DATA = "XYZZYSPOON!"
+
+const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 const defaultCoinObject = {
   coinsOwned : 0,
@@ -274,6 +275,77 @@ class App extends Component {
                                               .prices
         this.setState( { selectedCoinHistoricPrice });
       }).catch(console.log);
+  }
+
+  // UI Comp
+
+  getOverAllPortfolio = () => {
+
+    if(!this.state.postProcessingDone){
+      return (<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}> </Typography>)
+      
+    }
+
+    var seedData = {
+      coinsOwned : 0,
+      currentValue : 0,
+      fee : 0,
+      moneyInvested : 0,
+      moneyInvestedWithFees : 0
+    };
+    var combinedData = this.state.allCoinData.reduce( (prevTransaction,currentTransaction) => {
+          var newRecord = Object.assign({},prevTransaction);
+          newRecord.currentValue += currentTransaction.currentValue;
+          newRecord.moneyInvested += currentTransaction.moneyInvested;
+          newRecord.moneyInvestedWithFees += currentTransaction.moneyInvestedWithFees;
+          newRecord.coinsOwned += currentTransaction.coinsOwned;
+          newRecord.fee += currentTransaction.fee;
+          return newRecord;
+      },seedData);
+
+    var profit = combinedData.currentValue/combinedData.moneyInvested
+    profit *= 100;
+
+    // Rounding Off
+    profit *= 100;
+    profit %= 100;
+    profit = Math.round(profit) / 100;
+
+    return (
+      <Typography variant="h6" component="div" align="left" sx={{ flexGrow: 1 }}>
+        { "Portfolio Value : " + combinedData.currentValue + " Changes : " + profit }
+      </Typography>
+      
+      )
+  }
+
+  getToolbar = () => {
+    return (
+      <AppBar position="fixed">
+            <Toolbar>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ mr: 2 }}
+              >
+                {/* <MenuIcon /> */}
+              </IconButton>
+
+              { this.getOverAllPortfolio() }   
+
+              <Button variant="text" onClick={this.downloadSampleCSV} color="inherit">Download Sample Report</Button>
+
+              { this.state.postProcessingDone ? 
+                  <Button variant="outlined" onClick={this.resetAll} color="inherit">Reset</Button>
+                  : <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
+                        <Button variant="outlined" color="inherit" >Upload</Button>
+                    </ReactFileReader>
+                }
+            </Toolbar>
+        </AppBar>
+    )
   }
 
   // UI EVENTS
@@ -629,47 +701,17 @@ class App extends Component {
 
   render(){
     return (
-      <div className="App">
-           <AppBar position="static">
-            <Toolbar>
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{ mr: 2 }}
-              >
-                {/* <MenuIcon /> */}
-              </IconButton>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                { this.state.postProcessingDone ? "Detail" : "Upload your file"}
-              </Typography>
+      <div className="App" style={ { backgroundColor : "#eee"}}>
+          { this.getToolbar() }
+          <Offset />
 
-                <Button variant="text" onClick={this.downloadSampleCSV} color="inherit">Download Sample Report</Button>
-
-                { this.state.postProcessingDone ? 
-                    <Button variant="outlined" onClick={this.resetAll} color="inherit">Reset</Button>
-                    : <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
-                          <Button variant="outlined" color="inherit" >Upload</Button>
-                      </ReactFileReader>
-                }
-
-              
-            </Toolbar>
-          </AppBar>
           {
             !this.state.postProcessingDone
               ? <header className="App-header"> 
-                  {/* <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" /> */}
-                  <label>In Deapth Analysis of Trade Report</label>
+                  <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}> In Deapth Analysis of Trade Report </Typography>
                 </header> 
               : 
               <div>
-                <PortfolioOverview
-                  allCoinIcon = {this.state.allCoinIcon}
-                  allCoinData = {this.state.allCoinData}
-                  allCoins = {this.state.allSuportedCoins}
-                />
                 <PortfolioDetails
                   selectedCoinIcon = { this.state.selectedCoinIcon }
                   selectedCoinToken = { this.state.selectedCoinToken }
@@ -678,6 +720,7 @@ class App extends Component {
                   selectedCoinDataSet = { this.state.selectedCoinDataSet}
                   selectedCoinHistoricPrice = { this.state.selectedCoinHistoricPrice }
                   updateSelectedToken = {this.handleNewTokenSelection}
+                  allCoinData = {this.state.allCoinData}
                   allCoinIcon = {this.state.allCoinIcon}
                   allSuportedCoins = {this.state.allSuportedCoins} />
               </div>

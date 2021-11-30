@@ -4,17 +4,24 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// Start listening to the process
-var warningCheck =  (warning) => {
-  
-  // If there is a warning then print
-  // it and stop the process
-  if (warning) {
-      console.log(warning);
-  }
-};
 
-process.emitWarning = warningCheck;
+const boilerPlateCode = () => {
+
+  // Start listening to the process
+  var warningCheck =  (warning) => {
+    
+    // If there is a warning then print
+    // it and stop the process
+    if (warning) {
+        console.log(warning);
+    }
+  };
+
+  process.emitWarning = warningCheck;
+}
+
+
+boilerPlateCode();
 
 ReactDOM.render(
   <React.StrictMode>

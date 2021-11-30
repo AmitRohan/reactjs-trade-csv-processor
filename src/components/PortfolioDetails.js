@@ -1,5 +1,6 @@
-import { Tab, Tabs , Box, Avatar} from '@mui/material';
+import { Tab, Tabs , Box } from '@mui/material';
 import React, { Component } from 'react';
+import CoinTab from './CoinTab';
 import CurrentCoinBalance from './CurrentCoinBalance';
 
 const defaultCoinObject = {
@@ -39,23 +40,32 @@ class PortfolioDetails extends Component {
 
   getTabs = () =>  {
     var allSuportedCoins = this.props.allSuportedCoins
+    
     return allSuportedCoins.map( (coin,pos) => {
-      var avatarIcon = <Avatar alt="" src={this.props.allCoinIcon[pos].small}  sx={{ width: 24, height: 24 }}/>
+      var _card  = (  <CoinTab
+        coinIcon = { this.props.allCoinIcon[pos]}
+        coinToken = { coin}
+        coinData = { this.props.allCoinData[pos] }/>)
       return (
-        <Tab icon={avatarIcon} iconPosition="start" label={coin} key={coin} />)
+        <Tab icon={_card} iconPosition="start" key={coin}/>)
     });
   }
 
   render(){
     return (
-      <div>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={this.state.coinIndex} aria-label="suported eth coin"  onChange={this.handleCoinSelection}>
+      <Box>
+          <Tabs 
+            value={this.state.coinIndex}
+            aria-label="suported eth coin"
+            onChange={this.handleCoinSelection}
+            scrollButtons={true}
+            allowScrollButtonsMobile
+            selectionFollowsFocus
+            sx={{ borderBottom: 1, borderColor: 'divider' , bgcolor: 'background.paper'}}>
             {
               this.getTabs()
             }
           </Tabs>
-        </Box>
         {
             this.props.selectedCoinToken === null
             || !this.state.firstSelect
@@ -69,7 +79,7 @@ class PortfolioDetails extends Component {
                   coinHistoricPrice = {this.props.selectedCoinHistoricPrice}
                 />)
         }
-      </div>
+      </Box>
     );
   }
 }
