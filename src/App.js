@@ -3,6 +3,7 @@ import ReactFileReader from 'react-file-reader';
 import React, { Component } from 'react';
 import PortfolioDetails from './components/PortfolioDetails';
 import { AppBar, Backdrop, Button, CircularProgress, IconButton, Toolbar, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 // import MenuIcon from '@mui/icons-material/Menu';
 const CSVPasrse = require('csv-parse');
 
@@ -13,6 +14,8 @@ const CoinGeckoClient = new CoinGecko();
 const whiteListCoins = ["ALL"];
 const blackListCoins = ["SOUL"];
 const LOCAL_DATA = "XYZZYSPOON!"
+
+const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 const defaultCoinObject = {
   coinsOwned : 0,
@@ -314,6 +317,35 @@ class App extends Component {
       </Typography>
       
       )
+  }
+
+  getToolbar = () => {
+    return (
+      <AppBar position="fixed">
+            <Toolbar>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ mr: 2 }}
+              >
+                {/* <MenuIcon /> */}
+              </IconButton>
+
+              { this.getOverAllPortfolio() }   
+
+              <Button variant="text" onClick={this.downloadSampleCSV} color="inherit">Download Sample Report</Button>
+
+              { this.state.postProcessingDone ? 
+                  <Button variant="outlined" onClick={this.resetAll} color="inherit">Reset</Button>
+                  : <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
+                        <Button variant="outlined" color="inherit" >Upload</Button>
+                    </ReactFileReader>
+                }
+            </Toolbar>
+        </AppBar>
+    )
   }
 
   // UI EVENTS
@@ -670,32 +702,9 @@ class App extends Component {
   render(){
     return (
       <div className="App" style={ { backgroundColor : "#eee"}}>
-           <AppBar position="static">
-            <Toolbar>
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{ mr: 2 }}
-              >
-                {/* <MenuIcon /> */}
-              </IconButton>
+          { this.getToolbar() }
+          <Offset />
 
-              { this.getOverAllPortfolio() }   
-
-              <Button variant="text" onClick={this.downloadSampleCSV} color="inherit">Download Sample Report</Button>
-
-              { this.state.postProcessingDone ? 
-                  <Button variant="outlined" onClick={this.resetAll} color="inherit">Reset</Button>
-                  : <ReactFileReader handleFiles={this.handleFiles} fileTypes={'.csv'}>
-                        <Button variant="outlined" color="inherit" >Upload</Button>
-                    </ReactFileReader>
-                }
-
-              
-            </Toolbar>
-          </AppBar>
           {
             !this.state.postProcessingDone
               ? <header className="App-header"> 
