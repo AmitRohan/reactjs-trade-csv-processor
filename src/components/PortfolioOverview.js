@@ -22,7 +22,7 @@ class PortfolioOverview extends Component {
           return newRecord;
       },seedData);
     return (
-      <Grid lg={4} sm={6} xs={12}>
+      <Grid item lg={4} sm={6} xs={12}>
         <CoinOverview
           coinIcon = { { large : "" } }
           coinToken = { "OVER ALL" }
