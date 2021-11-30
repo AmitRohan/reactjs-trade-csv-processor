@@ -48,14 +48,19 @@ class PortfolioDetails extends Component {
 
   render(){
     return (
-      <div>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' , bgcolor: 'background.paper'}}>
-          <Tabs value={this.state.coinIndex} aria-label="suported eth coin"  onChange={this.handleCoinSelection}>
+      <Box
+        sx={{ flexGrow: 1, display: 'flex'}}
+      >
+          <Tabs 
+            value={this.state.coinIndex}
+            aria-label="suported eth coin"
+            orientation="vertical"
+            onChange={this.handleCoinSelection}
+            sx={{ borderRight: 1, borderColor: 'divider' , bgcolor: 'background.paper'}}>
             {
               this.getTabs()
             }
           </Tabs>
-        </Box>
         {
             this.props.selectedCoinToken === null
             || !this.state.firstSelect
@@ -69,7 +74,7 @@ class PortfolioDetails extends Component {
                   coinHistoricPrice = {this.props.selectedCoinHistoricPrice}
                 />)
         }
-      </div>
+      </Box>
     );
   }
 }
