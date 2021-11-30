@@ -22,7 +22,7 @@ class PortfolioOverview extends Component {
           return newRecord;
       },seedData);
     return (
-      <Grid item xs={12}>
+      <Grid lg={4} sm={6} xs={12}>
         <CoinOverview
           coinIcon = { { large : "" } }
           coinToken = { "OVER ALL" }
@@ -45,10 +45,12 @@ class PortfolioOverview extends Component {
   
   render(){
     return (
-      <Grid container spacing={2} sx={{ padding: '12px'}}>
+      <Grid container spacing={2} sx={{ padding: '12px', paddingTop : '28px'}}>
+        <Grid item lg={4} sm={3} xs={0}/>
         {
           this.getCombinedPortfolio()
         }
+        <Grid item lg={4} sm={3} xs={0}/>
         {
           this.getIndividualCards()
         }
