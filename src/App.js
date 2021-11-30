@@ -629,7 +629,7 @@ class App extends Component {
 
   render(){
     return (
-      <div className="App">
+      <div className="App" style={ { backgroundColor : "#eee"}}>
            <AppBar position="static">
             <Toolbar>
               <IconButton
@@ -642,7 +642,7 @@ class App extends Component {
                 {/* <MenuIcon /> */}
               </IconButton>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                { this.state.postProcessingDone ? "Detail" : "Upload your file"}
+                
               </Typography>
 
                 <Button variant="text" onClick={this.downloadSampleCSV} color="inherit">Download Sample Report</Button>
@@ -660,8 +660,7 @@ class App extends Component {
           {
             !this.state.postProcessingDone
               ? <header className="App-header"> 
-                  {/* <img src={logo} height="100px" width="100px" className="App-logo" alt="logo" /> */}
-                  <label>In Deapth Analysis of Trade Report</label>
+                  <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}> In Deapth Analysis of Trade Report </Typography>
                 </header> 
               : 
               <div>
