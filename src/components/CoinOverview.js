@@ -1,41 +1,7 @@
 import { Avatar, Card, CardContent, Typography } from '@mui/material';
 import React, { Component } from 'react';
-import { styled } from '@mui/material/styles';
-import Badge from '@mui/material/Badge';
-
-const GreenStyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    backgroundColor: '#44b700',
-    color: '#44b700',
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    '&::after': {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      content: '""',
-    },
-  }
-}));
-
-
-const RedStyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    backgroundColor: '#b74400',
-    color: '#b74400',
-    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-    '&::after': {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      content: '""',
-    },
-  }
-}));
-
+import GreenStyledBadge from './GreenStyledBadge';
+import RedStyledBadge from './RedStyledBadge';
 
 class CoinOverview extends Component {
   
@@ -54,7 +20,7 @@ class CoinOverview extends Component {
   render(){
     return (
 
-      <Card sx={{ minWidth: 275 }}>
+      <Card>
         <CardContent>
 
           { this.getProfit() > 0
