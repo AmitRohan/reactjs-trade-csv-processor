@@ -1,4 +1,4 @@
-import { Avatar, Card, CardContent, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Avatar, Card, CardContent, Divider, Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import React, { Component } from 'react';
 import ReactApexChart from "react-apexcharts";
 
@@ -110,9 +110,13 @@ class CurrentCoinBalance extends Component {
   }
 
   getTransactionListCard = () => {
+
+    var borderProps = { borderBottom: 1 , borderColor : 'rgba(0, 0, 0, 0.87)'};
+    var lastBorderProps = { };
+
     return (<Card sx={{ minWidth: 275 }}>
       <CardContent>
-        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
             {
               this.props.coinDataSet.map( (transaction, pos) => {
                 
@@ -129,23 +133,24 @@ class CurrentCoinBalance extends Component {
                     
                   </React.Fragment>)
                 
-                
-                
                 return(
-                  <ListItem key={pos + "transaction"}>
-                    <ListItemIcon>
-                      {/* {
-                        transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
-                      } */}
+                  <ListItem key={pos + "transaction"} sx={ pos + 1 === this.props.coinDataSet.length ? lastBorderProps : borderProps}>
+                  
+                      <ListItemIcon>
+                        {/* {
+                          transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
+                        } */}
 
-                      <Avatar alt="Remy Sharp" src={this.props.coinIcon.large} />
+                        <Avatar alt="Remy Sharp" src={this.props.coinIcon.large} />
 
-                      
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={ transaction.Crypto_Amt + " " + transaction.Desc + " for " + transaction.FIAT}
-                      secondary={secondaryComp}
-                    />
+                        
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={ transaction.Crypto_Amt + " " + transaction.Desc + " for " + transaction.FIAT}
+                        secondary={secondaryComp}
+                      />
+                    
+
                   </ListItem>
                 )
               })
