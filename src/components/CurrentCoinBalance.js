@@ -111,7 +111,7 @@ class CurrentCoinBalance extends Component {
 
   getTransactionListCard = () => {
 
-    var borderProps = { borderBottom: 1 , borderColor : 'rgba(0, 0, 0, 0.87)'};
+    var borderProps = { borderBottom: 1 , borderColor : 'divider'};
     var lastBorderProps = { };
 
     return (<Card sx={{ minWidth: 275 }}>
