@@ -34,7 +34,7 @@ class PortfolioOverview extends Component {
     var allCoinData = this.props.allCoinData;
     return allCoinData.map( (coin, id) => {
       return (
-        <Grid item xs={4} key= { id}>
+        <Grid item xs={3} key= {id}>
             <CoinOverview
               coinIcon = { this.props.allCoinIcon[id]}
               coinToken = { this.props.allCoins[id]}
@@ -45,7 +45,7 @@ class PortfolioOverview extends Component {
   
   render(){
     return (
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ padding: '12px'}}>
         {
           this.getCombinedPortfolio()
         }
