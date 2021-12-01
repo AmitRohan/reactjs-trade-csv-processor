@@ -27,7 +27,7 @@ class PortfolioDetails extends Component {
 
   handleCoinSelection = (e,coinIndex) => {
 
-    var coin = this.props.allSuportedCoins[coinIndex] || "";
+    var coin = this.props.pState.allSuportedCoins[coinIndex] || "";
 
     if(this.state.active === coin){
       return;
@@ -39,19 +39,29 @@ class PortfolioDetails extends Component {
   }
 
   getTabs = () =>  {
-    var allSuportedCoins = this.props.allSuportedCoins
+    var allSuportedCoins = this.props.pState.allSuportedCoins
     
     return allSuportedCoins.map( (coin,pos) => {
-      var _card  = (  <CoinTab
-        coinIcon = { this.props.allCoinIcon[pos]}
-        coinToken = { coin}
-        coinData = { this.props.allCoinData[pos] }/>)
+      var _coin = {
+        coinToken : coin,
+        coinData : this.props.pState.allCoinData[pos],
+        coinIcon : this.props.pState.allCoinIcon[pos],
+      }
+      var _tabCard  = (  <CoinTab coin = { _coin } />)
       return (
-        <Tab icon={_card} iconPosition="start" key={coin}/>)
+        <Tab icon={_tabCard} iconPosition="start" key={coin}/>)
     });
   }
 
   render(){
+    var selectedCoinData = {
+      coinToken : this.props.pState.selectedCoinToken,
+      coinPrice : this.props.pState.selectedCoinPrice,
+      coinData : this.props.pState.selectedCoinData,
+      coinIcon : this.props.pState.selectedCoinIcon,
+      coinDataSet : this.props.pState.selectedCoinDataSet,
+      coinHistoricPrice : this.props.pState.selectedCoinHistoricPrice
+    }
     return (
       <Box>
           <Tabs 
@@ -67,17 +77,10 @@ class PortfolioDetails extends Component {
             }
           </Tabs>
         {
-            this.props.selectedCoinToken === null
+            this.props.pState.selectedCoinToken === null
             || !this.state.firstSelect
               ? <div> Select a token </div>
-              : (<CurrentCoinBalance
-                  coinToken = {this.props.selectedCoinToken}
-                  coinPrice = {this.props.selectedCoinPrice}
-                  coinData = {this.props.selectedCoinData}
-                  coinIcon = {this.props.selectedCoinIcon}
-                  coinDataSet = {this.props.selectedCoinDataSet}
-                  coinHistoricPrice = {this.props.selectedCoinHistoricPrice}
-                />)
+              : (<CurrentCoinBalance coin = {selectedCoinData}/>)
         }
       </Box>
     );

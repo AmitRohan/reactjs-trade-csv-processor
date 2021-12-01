@@ -713,16 +713,8 @@ class App extends Component {
               : 
               <div>
                 <PortfolioDetails
-                  selectedCoinIcon = { this.state.selectedCoinIcon }
-                  selectedCoinToken = { this.state.selectedCoinToken }
-                  selectedCoinPrice = { this.state.selectedCoinPrice}
-                  selectedCoinData = { this.state.selectedCoinData}
-                  selectedCoinDataSet = { this.state.selectedCoinDataSet}
-                  selectedCoinHistoricPrice = { this.state.selectedCoinHistoricPrice }
                   updateSelectedToken = {this.handleNewTokenSelection}
-                  allCoinData = {this.state.allCoinData}
-                  allCoinIcon = {this.state.allCoinIcon}
-                  allSuportedCoins = {this.state.allSuportedCoins} />
+                  pState = { this.state }/>
               </div>
               
           }
