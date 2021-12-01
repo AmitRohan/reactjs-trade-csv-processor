@@ -42,27 +42,27 @@ class CurrentCoinBalance extends Component {
       <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {this.props.coinData.coinsOwned + " " + this.props.coinToken + " Owned"} 
+          {this.props.coin.coinData.coinsOwned + " " + this.props.coin.coinToken + " Owned"} 
         </Typography>
         <Typography gutterBottom variant="h6" component="div">
           Price
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {this.props.coinPrice}
+          {this.props.coin.coinPrice}
         </Typography>
 
         <Typography gutterBottom variant="h6" component="div">
           Current Value
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {Math.abs(this.props.coinData.currentValue)}
+          {Math.abs(this.props.coin.coinData.currentValue)}
         </Typography>
 
         <Typography gutterBottom variant="h6" component="div">
           Money Invested (Without fee)
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {Math.abs(this.props.coinData.moneyInvested)}
+          {Math.abs(this.props.coin.coinData.moneyInvested)}
         </Typography>
 
 
@@ -70,7 +70,7 @@ class CurrentCoinBalance extends Component {
           Fees Paid
         </Typography>
         <Typography variant="body2" color="text.secondary">
-        {this.props.coinData.fee}
+        {this.props.coin.coinData.fee}
         </Typography>
 
 
@@ -78,7 +78,7 @@ class CurrentCoinBalance extends Component {
           Money Invested (With fee)
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {Math.abs(this.props.coinData.moneyInvestedWithFees)}
+          {Math.abs(this.props.coin.coinData.moneyInvestedWithFees)}
         </Typography>
       </CardContent>
     </Card>
@@ -86,11 +86,11 @@ class CurrentCoinBalance extends Component {
   }
   
   getGraph = () => {
-    const coinHistoricPrice = this.props.coinHistoricPrice || []
+    const coinHistoricPrice = this.props.coin.coinHistoricPrice || []
     const options = Object.assign({},chartConfig.options)
     options.xaxis.categories= coinHistoricPrice.map( x => new Date(x[0]).toLocaleDateString())
     const series = [{
-      name: this.props.coinToken,
+      name: this.props.coin.coinToken,
       data: coinHistoricPrice.map( x => x[1])
   }]
     return (
@@ -118,7 +118,7 @@ class CurrentCoinBalance extends Component {
       <CardContent>
         <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
             {
-              this.props.coinDataSet.map( (transaction, pos) => {
+              this.props.coin.coinDataSet.map( (transaction, pos) => {
                 
                 var secondaryComp = 
                   (<React.Fragment>
@@ -134,14 +134,14 @@ class CurrentCoinBalance extends Component {
                   </React.Fragment>)
                 
                 return(
-                  <ListItem key={pos + "transaction"} sx={ pos + 1 === this.props.coinDataSet.length ? lastBorderProps : borderProps}>
+                  <ListItem key={pos + "transaction"} sx={ pos + 1 === this.props.coin.coinDataSet.length ? lastBorderProps : borderProps}>
                   
                       <ListItemIcon>
                         {/* {
                           transaction.SIDE === "BUY" ? <AddIcon /> : <RemoveIcon />
                         } */}
 
-                        <Avatar alt="Remy Sharp" src={this.props.coinIcon.large} />
+                        <Avatar alt="Remy Sharp" src={this.props.coin.coinIcon.large} />
 
                         
                       </ListItemIcon>

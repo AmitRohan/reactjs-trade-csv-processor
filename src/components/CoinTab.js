@@ -46,7 +46,7 @@ const RedStyledBadge = styled(Badge)(({ theme }) => ({
 class CoinTab extends Component {
   
   getProfit = () =>  {
-    var profit = this.props.coinData.currentValue/this.props.coinData.moneyInvested
+    var profit = this.props.coin.coinData.currentValue/this.props.coin.coinData.moneyInvested
     profit *= 100;
 
     // Rounding Off
@@ -58,7 +58,7 @@ class CoinTab extends Component {
   }
   
   render(){
-    var avatar = <Avatar alt="" src={this.props.coinIcon.large} sx={{ width: 24, height: 24 }} />;
+    var avatar = <Avatar alt="" src={this.props.coin.coinIcon.large} sx={{ width: 24, height: 24 }} />;
     return (
 
       
@@ -81,10 +81,10 @@ class CoinTab extends Component {
               </RedStyledBadge>
           }
           <Typography gutterBottom component="div">
-            {this.props.coinToken } { this.getProfit() + "%" }
+            {this.props.coin.coinToken } { this.getProfit() + "%" }
           </Typography>
           <Typography gutterBottom  component="div">
-            {Math.abs(this.props.coinData.currentValue)} INR
+            {Math.abs(this.props.coin.coinData.currentValue)} INR
           </Typography>
         </Box>
       
